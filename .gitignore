@@ -1,0 +1,9 @@
+*.o
+*.out
+*.gch
+*.so
+*.a
+*.log
+
+toy.out
+*_tests
