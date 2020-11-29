@@ -2,6 +2,7 @@
 #include "compiler.h"
 #include "scanner.h"
 #include "token.h"
+#include "bool.h"
 
 #define T Token
 
@@ -9,7 +10,7 @@ void compile(const char *source) {
     int line = 0;
 
     init_scanner(source);
-    while (1) {
+    while (TRUE) {
         T token = scan_token();
         if (line != token.line_num) {
             printf("%4d ", token.line_num);
@@ -23,7 +24,7 @@ void compile(const char *source) {
             break;
         }
         // TODO(ljr): rm
-        break;
+        // break;
     }
 
 }

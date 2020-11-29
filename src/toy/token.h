@@ -6,7 +6,7 @@ typedef enum {
     T_INT, T_REAL, T_IF, T_THEN, T_ELSE, T_WHILE,
 
     // literal
-    T_IDENTIFIER, T_NUM_INT, T_NUM_DOUBLE,
+    T_IDENTIFIER, T_NUMBER,
 
     // delimeters
     T_LEFT_PAREN, T_RIGHT_PAREN,
@@ -36,10 +36,10 @@ typedef struct {
     char *start;
     int length;
     TokenType type;
-    union {
-        double m_double;
-        int m_int;
-    } value;
+    // union {
+    //     double m_double;
+    //     int m_int;
+    // } value;
     int line_num;
     int line_pos;
 } Token;

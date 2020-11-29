@@ -1,6 +1,6 @@
 const char *token_type_string[] = {
     "INT", "REAL", "IF", "THEN", "ELSE", "WHILE",
-    "IDENTIFIER", "NUM_INT", "NUM_DOUBLE",
+    "IDENTIFIER", "NUMBER",
     "LEFT_PAREN", "RIGHT_PAREN",
     "LEFT_BRACE", "RIGHT_BRACE",
     "COMMA", "DOT", "SEMICOLON",
@@ -9,5 +9,6 @@ const char *token_type_string[] = {
     "LESS", "LESS_EQUAL",
     "GREATER", "GREATER_EQUAL",
     "BANG_EQUAL",
-    "T_EOF"
+    "T_EOF",
+    "T_ERROR"
 };

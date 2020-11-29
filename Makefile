@@ -1,4 +1,4 @@
-CFLAGS=-g -Wall -Wextra -Isrc -rdynamic -DNDEBUG $(OPTFLAGS)
+CFLAGS=-g -Wall -Wextra -Isrc -rdynamic $(OPTFLAGS)
 LIBS=$(OPTLIBS) -ldl
 PREFIX?=/usr/local
 
@@ -12,7 +12,7 @@ TESTS=$(patsubst %.c,%,$(TEST_SRC))
 
 # specify build directory
 TARGET=bin/toy.out
-TEST_TARGET=build/libtest.a
+TEST_TARGET=build/libtoy.a
 
 all: build $(TARGET) $(TEST_TARGET) tests
 
@@ -38,6 +38,10 @@ build:
 	@mkdir -p build/src/toy
 	@mkdir -p build/tests
 	@mkdir -p bin
+
+final: CFLAGS += -DNDEBUG
+final: all
+
 
 .PHONY: tests
 tests: $(TESTS)
