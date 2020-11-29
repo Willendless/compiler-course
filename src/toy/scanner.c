@@ -62,7 +62,6 @@ T scan_token() {
 
     skip_whitespace();
 
-    debug("cur string:%s", scanner.cur);
     ch = advance();
 
     // comment
@@ -79,7 +78,6 @@ T scan_token() {
     }
     // identifier
 
-    debug("cur string:%s", scanner.cur);
     if (is_alpha(ch)) {
         return identifier();
     }
@@ -245,7 +243,6 @@ static TT get_identifier_type(void) {
         case 'e': return check_keyword(1, 3, "lse", T_ELSE);
         case 'w': return check_keyword(1, 4, "hile", T_WHILE);
         case 'i': 
-            debug("cur string:%s", scanner.cur);
             if (scanner.start[1] == 'n') {
                 return check_keyword(1, 2, "nt", T_INT);
             } else {
