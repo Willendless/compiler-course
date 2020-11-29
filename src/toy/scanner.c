@@ -283,6 +283,11 @@ static inline T make_token(TT token_type) {
 }
 
 static inline T error_token(const char *msg) {
-    T t;
+    Token t;
+    t.type = T_ERROR;
+    t.start = msg;
+    t.length = (int)strlen(msg);
+    t.line_num = scanner.line_num;
+    t.line_pos = scanner.line_pos;
     return t;
 }
