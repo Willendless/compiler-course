@@ -23,9 +23,9 @@
 
 ## code generation
 
-+ 符号表
-+ bytecode generator
-+ vm
++ [ ] 符号表
++ [ ] bytecode generator
++ [ ] vm
 
 ## visualization
 
@@ -42,3 +42,5 @@
 - [ ] 编程语言其它支持：for，布尔类型，内置的字符串的支持、内置语句(例如：print)
 - [ ] 函数
 - [ ] OOP特性
+
+## reference
