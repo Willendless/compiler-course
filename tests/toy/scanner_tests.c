@@ -1,4 +1,4 @@
-#include "minunit.h"
+#include "../minunit.h"
 #include <assert.h>
 #include <toy/scanner.h>
 #include <toy/token.h>
@@ -14,11 +14,16 @@ char *test_number() {
     const char *number5 = "1212.2E+3";
     const char *number6 = "1212.2E-3";
     const char *number7 = "1212.2e-3";
+    T t;
     
     init_scanner(number1);
-    T t = scan_token();
+    t = scan_token();
     mu_assert(t.length == 4, "Failed to scan token length");
     mu_assert(t.type == T_NUMBER, "Failed to scan token type");
+    init_scanner(number2);
+    t = scan_token();
+    mu_assert(t.length == 7, "Failed to scan token length");
+    mu_assert(t.type == T_NUMBER, "Failed to scan token type"); 
     return NULL;
 }
 

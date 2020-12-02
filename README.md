@@ -4,16 +4,34 @@
 
 |进度|计划工期|实际完成工期|
 |:---:|:---:|:---:|
-|scanner|2.5天||
+|scanner|2.5天|1.5天|
 |parser|2.5天||
-|三地址码生成|3天||
-|中间代码优化|3天||
-|字节码生成|3天||
-|虚拟机执行|3天||
-|GUI界面|3天||
+|代码生成|3天||
+|虚拟机实现|3天||
+|GUI界面|7天||
+
+## scanner
+
++ [ ] 缓冲区(double buffering)
++ [x] lexer
+
+## parser
+
++ [ ] LL(1) table generator
++ [ ] LL parser
++ [ ] error handling
+
+## code generation
+
++ 符号表
++ bytecode generator
++ vm
+
+## visualization
 
 ## 其它部分
 
+- [x] c单元测试
 - [ ] qt可视化显示，[UI参考1](https://mashplant.online/minidecaf-frontend/), [UI参考2](https://github.com/yunwei37/MIPS-sc-zju)
 - [ ] scanner generator
 - [ ] LL(1) parser generator
