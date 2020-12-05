@@ -1,9 +1,9 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include "debug.h"
+#include "../utils/debug.h"
+#include "../utils/bool.h"
 #include "scanner.h"
-#include "bool.h"
 
 #define T Token
 #define TT TokenType
@@ -33,7 +33,6 @@ static char next_next(void);
 static bool is_digit(char);
 static void skip_whitespace();
 
-static bool is_number(char);
 static T number(void);
 static bool is_fraction(void);
 static void fraction(void);

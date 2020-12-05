@@ -6,7 +6,7 @@ SOURCES=$(wildcard src/toy/**/*.c src/toy/*.c src/lib/*.c)
 OBJECTS=$(patsubst %.c,%.o,$(SOURCES))
 DEST_OBJ=$(patsubst src/%,build/src/%,$(patsubst %.c,%.o,$(SOURCES)))
 
-TEST_SRC=$(wildcard tests/*_tests.c tests/toy/*_tests.c)
+TEST_SRC=$(wildcard tests/*_tests.c tests/toy/*_tests.c tests/lib/*_tests.c)
 TEST_OBJ=$(patsubst tests/%, build/tests/%, $(patsubst %.c,%.o,$(TEST_SRC)))
 TESTS=$(patsubst %.c,%,$(TEST_SRC))
 
@@ -36,8 +36,10 @@ $(TEST_TARGET): $(DEST_OBJ)
 
 build:
 	@mkdir -p build/src/toy
+	@mkdir -p build/src/lib
 	@mkdir -p build/tests
 	@mkdir -p build/tests/toy
+	@mkdir -p build/tests/lib
 	@mkdir -p bin
 
 final: CFLAGS += -DNDEBUG

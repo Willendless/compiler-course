@@ -7,7 +7,8 @@ rm ./tests.log
 all_tests=0
 ok=0
 
-for i in build/tests/*_tests
+echo "lib tests: ----------"
+for i in build/tests/lib/*_tests
 do
     if test -f $i
     then
@@ -23,6 +24,7 @@ do
     let all_tests++;
 done
 
+echo "toy tests: ----------"
 for i in build/tests/toy/*_tests
 do
     if test -f $i
