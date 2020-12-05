@@ -35,12 +35,15 @@ production表示为`[head] -> [product]`。
 
 ### 1. 表示production的数据结构
 
-+ 使用基于动态数组的邻接表表示，内部均使用以0中索引作为值得动态数组表示
-+ production采用二元组定位，`(a, b)`。`a`表示production的head的邻接表索引，`b`表示在`a`对应动态数组中product的索引。
++ 使用动态数组表示，索引和non-terminal的索引一一对应
++ 每一项对应一个动态数组，用于存储同一head对应的所有production
++ 单个production也是用动态数组表示
++ 因此属于三维数组结构
 
 ### 2. 表示first+集合
 
-+ 使用哈希表构造first、follow、first+集合，哈希表的值使用动态数组
++ 使用动态数组表示所有集合，索引和nonterminal索引一一对应
++ 每一项用一个set表示
 
 ## 算法
 

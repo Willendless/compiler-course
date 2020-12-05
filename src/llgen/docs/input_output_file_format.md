@@ -21,8 +21,9 @@ ll-spec文件被用于生成LL(1)算法的parse表。该文件由三个段构成
 
 ### 1.3 production段
 
-该段用于定义所有的production，第一行应当为`[production]`。head和product之间使用`->`以及一个或多个空白符分隔。两个不同head的production之间用换行符分隔。相同head的production之间使用`|`以及一个或多个空白符分隔。
+该段用于定义所有的production，第一行应当为`[production]`。head和product之间使用`->`以及一个或多个空白符分隔。两个不同head的production之间用`$`分隔。相同head的production之间使用`|`以及一个或多个空白符分隔。
 
+> production head和nonterminal出现的顺序不要求相同。  
 > epsilon是保留字，用于支持空的情况。
 
 ### 示例：一个用于四则运算表达式解析的ll-spec文件

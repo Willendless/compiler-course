@@ -13,7 +13,7 @@ $(TARGET): $(OBJECTS)
 
 $(OBJECTS): CFLAGS += -c
 $(OBJECTS): $(SOURCES)
-	$(CC) $(CFLAGS) -o $@ $^
+	$(CC) $(CFLAGS) -o $@ $(patsubst %.o,%.c,$@)
 
 # the cleaner
 clean:
