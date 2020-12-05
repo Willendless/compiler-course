@@ -4,7 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <toy/debug.h>
+#include <utils/debug.h>
 
 #define mu_suite_start() char *message = NULL
 
