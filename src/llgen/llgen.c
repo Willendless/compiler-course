@@ -50,7 +50,7 @@ void init(void) {
     grammar_table = Table_init(100, cmp_str, hash_str);
     production_arr = DArray_init(70, 100);
     first = DArray_init(sizeof(Set), 70);
-    follow = DArray_init(sizeof(Set), 70);
+    follow = DArray_init(sizeof(Set), 100);
     DArray_push(grammar_arr, "dummy entry");
 }
 
@@ -91,7 +91,6 @@ static void gen_first_sets(void) {
     bool flag = TRUE;
     int prev_cnt, cur_cnt;
     int i, j, k;
-    Set *cur;
     // first set for terminal
     for (i = 1; i < non_index; ++i) {
         // index -> index
@@ -115,23 +114,25 @@ static void gen_first_sets(void) {
             // for each production on one head
             for (j = 0; j <= productions->end; ++j) {
                 DArray *production = DArray_get(productions, j);
-                Set *pre = DArray_get(first, (int)DArray_get(production, 0));
+                Set *product = DArray_get(first, (int)DArray_get(production, 0));
                 // if s_head doesn't include epsilon, we cannot add it here
-                union_without_epsilon(s_head, pre);
+                union_without_epsilon(s_head, product);
                 // for other production union if epsilon exists in previous set
-                for (k = 1; k <= production->end && Set_member(pre, "epsilon"); ++k) {
-                    cur = DArray_get(first, DArray_get(production, k));
-                    union_without_epsilon(s_head, cur);
+                for (k = 1; k <= production->end && Set_member(product, Table_get(grammar_table, "epsilon")); ++k) {
+                    product = DArray_get(first, DArray_get(production, k));
+                    union_without_epsilon(s_head, product);
                 }
-                if (k > production->end && Set_member(cur, "epsilon")) {
-                    Set_put(s_head, "epsilon");
+                if (k > production->end && Set_member(product, Table_get(grammar_table, "epsilon"))) {
+                    Set_put(s_head, Table_get(grammar_table, "epsilon"));
                 }
-                // check if first sets changed
-                cur_cnt = Set_length(s_head);
-                if (prev_cnt != cur_cnt) {
-                    // first sets changed, loop continue
-                    flag |= TRUE;
-                }
+            }
+            // check if first sets changed
+            cur_cnt = Set_length(s_head);
+            if (prev_cnt != cur_cnt) {
+                // first sets changed, loop continue
+                printf("first set: %s %d %d\n", DArray_get(grammar_arr, i), prev_cnt, cur_cnt);
+                // Set_print(s_head);
+                flag |= TRUE;
             }
         }
     }
@@ -169,12 +170,19 @@ static void gen_follow_sets(void) {
     bool flag = TRUE;
     int prev_cnt;
     int cur_cnt;
+    Set *s_head;
     Set *record = Set_init(100, cmp_int, hash_int);
+    printf("non_index: %d, end: %d\n", non_index, grammar_arr->end);
     // init follow set
     for (i = non_index; i <= grammar_arr->end; ++i) {
-        DArray_set(follow, i, Set_init(100, cmp_int, hash_int));
+        Set *tmp = Set_init(5, cmp_int, hash_int);
+        check(tmp != NULL, "failed to init set");
+        DArray_set(follow, i, tmp);
+        check(DArray_get(follow, i) != NULL, "Failed to set follow arr.");
     }
     // put eof to follow(start)
+    s_head = DArray_get(follow, non_index);
+    check(s_head != NULL, "Failed to get head follow set.");
     Set_put(DArray_get(follow, non_index), Table_get(grammar_table, "eof"));
     //fixed-point
     while (flag) {
@@ -216,8 +224,9 @@ static void gen_follow_sets(void) {
             }
         }
     }
-error:
     return;
+error:
+    exit(80);
 }
 
 static inline void handle_input(void) {
@@ -226,17 +235,21 @@ static inline void handle_input(void) {
     handle_grammar();
     check(!strcmp(buf, "[nonterminal]"), "Failed to read [nonterminal]");
     handle_grammar();
-    check(!strcmp(buf, "[production]"), "Failed to read [production]");
+    check(!strcmp(buf, "[production]"), "Failed to read [production], %s instead", buf);
     handle_production();
+    return;
 error:
+    fprintf(stderr, "failed to handle input\n");
     exit(80);
 }
 
 static inline void handle_grammar() {
     while (fscanf(in, "%s", buf) != EOF) {
         if (buf[0] == '[') {
-            // finish processing terminal part
-            non_index = grammar_arr->end + 1;
+            if (!non_index) {
+                // finish processing terminal part
+                non_index = grammar_arr->end + 1;
+            }
             break;
         }
         // push into arr
@@ -246,6 +259,11 @@ static inline void handle_grammar() {
         // put into table
         Table_put(grammar_table, g, grammar_arr->end);
     }
+    check(Table_get(grammar_table, "epsilon") != NULL, "failed to add epsilon grammar");
+    check(Table_get(grammar_table, "eof") != NULL, "failed to add eof grammar");
+    return;
+error:
+    exit(80);
 }
 
 static inline void handle_production() {
@@ -254,11 +272,11 @@ static inline void handle_production() {
     DArray *production;
 
     while (fscanf(in, "%s", buf) != EOF) {
-        // read production head which must be nonterminal
-        fscanf(in, "%s", buf);
         // get head's index
         index = Table_get(grammar_table, buf);
-        check(index != NULL, "Unknown to get nonterminal.");
+        check(index != NULL, "Unknown nonterminal: %s.", buf);
+        // read "->"
+        fscanf(in, "%s", buf);
         check(strcmp(buf, "->") == 0, "Invalid production format.");
         productions = DArray_init(sizeof(DArray), 5);
         DArray_set(production_arr, index, productions);
@@ -269,9 +287,9 @@ static inline void handle_production() {
             DArray_push(productions, production);
             // read each grammar
             fscanf(in, "%s", buf);
-            while (strcmp(buf, "!") && strcmp(buf, "$")) {
+            while (strcmp(buf, "|") && strcmp(buf, "$")) {
                 index = Table_get(grammar_table, buf);
-                check(index != NULL, "Unknown to get grammar.");
+                check(index != NULL, "Unknown grammar: %s.", buf);
                 DArray_push(production, (void *)index);
                 fscanf(in, "%s", buf);
             }
@@ -283,6 +301,7 @@ error:
 }
 
 static void handle_output(void) {
+    printf("output table\n");
     fprintf(out, "#include <stdio.h>\n");
     fprintf(out, "#include \"parser.h\"\n");
     output_table();
@@ -332,7 +351,7 @@ static unsigned hash_str(const void *key) {
 }
 
 static bool cmp_int(const void *a, const void *b) {
-    return a != b;
+    return a == b;
 }
 
 static unsigned hash_int(const void *key) {

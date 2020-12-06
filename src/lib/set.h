@@ -17,6 +17,7 @@ typedef struct {
 #define T Set
 
 T *Set_init(int hint, bool cmp(const void *a, const void *b), unsigned hash(const void *mem));
+void Set_print(T *s);
 void Set_clear(T *s);
 void Set_destroy(T *s);
 void Set_clear_destroy(T *s);

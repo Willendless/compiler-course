@@ -7,7 +7,7 @@
 
 #define T Set
 
-static const int primes[] = {509, 509, 1021, 2053, 4093, 8191, 16381, 32771, 65521, INT_MAX};
+static const int primes[] = {47, 47, 73, 509, 1021, 2053, 4093, 8191, 16381, 32771, 65521, INT_MAX};
 
 T *Set_init(int hint,
     bool cmp(const void *a, const void *b), unsigned hash(const void *mem)) {
@@ -29,6 +29,18 @@ T *Set_init(int hint,
         return set;
 error:
         return NULL;
+}
+
+void Set_print(T *s) {
+    int i;
+    struct set_entry *p;
+
+    for (i = 0; i < s->bucket_size; ++i) {
+        for (p = s->buckets[i]; p; p = p->next) {
+            printf("%d ", p->member);
+        }
+        printf("\n");
+    }
 }
 
 void Set_clear(T *s) {

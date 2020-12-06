@@ -38,7 +38,7 @@ stmt -> ifstmt | whilestmt | assgstmt | compoundstmt $
 compoundstmt -> { stmts } $
 stmts -> stmt stmts | epsilon $
 ifstmt -> if ( boolexpr ) then stmt else stmt $
-whilestmt-> while ( boolexpr ) stmt $
+whilestmt -> while ( boolexpr ) stmt $
 assgstmt -> ID = arithexpr ; $
 boolexpr -> arithexpr boolop arithexpr $
 boolop -> < | > | <= | >= | == $
