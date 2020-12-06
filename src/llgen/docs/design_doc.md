@@ -65,10 +65,8 @@ while (first sets变化) {
      for each productions {
          for each production {
              first[head] += first[product[0]] - epsilon
-             for i = 1; i < len(product) - 1; i++ {
-                 if (epsilon in first[i - 1]) {
-                     first[head] += first[product[i]] - epsilon
-                 }
+             for i = 1; i < len(product) - 1 && epsilon in first[i-1]; i++ {
+                 first[head] += first[product[i]] - epsilon
              }
              if i == len(product) - 1 and epsilon in first[product[i]] {
                  first[head] += epsilon
