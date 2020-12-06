@@ -68,9 +68,12 @@ void gen_table(void) {
     gen_first_sets();
     gen_follow_sets();
     // TODO(ljr): table generatation algo
-    table = (int **)calloc(1, sizeof(non_index-1)*sizeof(grammar_arr->end-non_index+1));
     x_end = grammar_arr->end - non_index + 1;
     y_end = non_index;
+    table = (int **)calloc(x_end + 1, sizeof(int *));
+    for (i = 0; i <= x_end; ++i) {
+        table[i] = (int *)calloc(y_end + 1, sizeof(int));
+    }
     // for each nonterminal
     for (i = non_index; i <= grammar_arr->end; ++i) {
         char *grammar = DArray_get(grammar_arr, i);
@@ -91,6 +94,7 @@ static void gen_first_sets(void) {
     bool flag = TRUE;
     int prev_cnt, cur_cnt;
     int i, j, k;
+    int epsilon_index = Table_get(grammar_table, "epsilon");
     // first set for terminal
     for (i = 1; i < non_index; ++i) {
         // index -> index
@@ -118,11 +122,11 @@ static void gen_first_sets(void) {
                 // if s_head doesn't include epsilon, we cannot add it here
                 union_without_epsilon(s_head, product);
                 // for other production union if epsilon exists in previous set
-                for (k = 1; k <= production->end && Set_member(product, Table_get(grammar_table, "epsilon")); ++k) {
+                for (k = 1; k <= production->end && Set_member(product, epsilon_index); ++k) {
                     product = DArray_get(first, DArray_get(production, k));
                     union_without_epsilon(s_head, product);
                 }
-                if (k > production->end && Set_member(product, Table_get(grammar_table, "epsilon"))) {
+                if (k > production->end && Set_member(product, epsilon_index)) {
                     Set_put(s_head, Table_get(grammar_table, "epsilon"));
                 }
             }
@@ -136,18 +140,22 @@ static void gen_first_sets(void) {
             }
         }
     }
+    for (i = 1; i <= grammar_arr->end; ++i) {
+        Set_print(DArray_get(first, i));
+    }
 }
 
 static void union_without_epsilon(Set *dest, Set *src) {
     bool have_epsilon;
+    int epsilon_index = Table_get(grammar_table, "epsilon");
     assert(dest != NULL);
     assert(src != NULL);
-    have_epsilon = Set_member(dest, "epsilon");
+    have_epsilon = Set_member(dest, epsilon_index);
     if (have_epsilon) {
         Set_union(dest, src);
     } else {
         Set_union(dest, src);
-        Set_remove(dest, "epsilon");
+        Set_remove(dest, epsilon_index);
     }
 }
 
@@ -172,12 +180,12 @@ static void gen_follow_sets(void) {
     int cur_cnt;
     Set *s_head;
     Set *record = Set_init(100, cmp_int, hash_int);
+    int epsilon_index = Table_get(grammar_table, "epsilon");
     printf("non_index: %d, end: %d\n", non_index, grammar_arr->end);
     // init follow set
-    for (i = non_index; i <= grammar_arr->end; ++i) {
-        Set *tmp = Set_init(5, cmp_int, hash_int);
-        check(tmp != NULL, "failed to init set");
-        DArray_set(follow, i, tmp);
+    for (i = 1; i <= grammar_arr->end; ++i) {
+        // empty set
+        DArray_set(follow, i, Set_init(5, cmp_int, hash_int));
         check(DArray_get(follow, i) != NULL, "Failed to set follow arr.");
     }
     // put eof to follow(start)
@@ -186,14 +194,18 @@ static void gen_follow_sets(void) {
     Set_put(DArray_get(follow, non_index), Table_get(grammar_table, "eof"));
     //fixed-point
     while (flag) {
+        flag = FALSE;
         // for each production head
         for (i = non_index; i <= production_arr->end; ++i) {
+            // only if epsilon in first set that follow set matters
+            if (!Set_member(DArray_get(first, i), epsilon_index))
+                continue;
             DArray *productions = DArray_get(production_arr, i);
             // for each production with the same head
             for (j = 0; j <= productions->end; ++j) {
                 // init record set to follow[head]
                 Set_clear(record);
-                check(Set_length(record) == 0, "Failed to clear set record.");
+                check(Set_length(record) == 0, "Failed to clear set record, len: %d.", Set_length(record));
                 Set_union(record, DArray_get(follow, i));
                 // get cur production
                 DArray *production = DArray_get(productions, j);
@@ -207,9 +219,9 @@ static void gen_follow_sets(void) {
                     Set_union(cur, record);
                     // product[k] can be epsilon, then follow[product[k]] can be in record
                     // otherwise, record can only contains first[product[k]]
-                    if (Set_member(DArray_get(first, index), "epsilon")) {
+                    if (Set_member(DArray_get(first, index), epsilon_index)) {
                         Set_union(record, DArray_get(first, index));
-                        Set_remove(record, "epsilon");
+                        Set_remove(record, epsilon_index);
                     } else {
                         Set_clear(record);
                         check(Set_length(record) == 0, "Failed to clear set record.");
@@ -218,6 +230,7 @@ static void gen_follow_sets(void) {
                     cur_cnt = Set_length(cur);
                     check(cur_cnt >= prev_cnt, "Follow set elements removed.");
                     if (cur_cnt > prev_cnt) {
+                        printf("follow set: %s %d -> %d\n", DArray_get(grammar_arr, k), cur_cnt, prev_cnt);
                         flag = TRUE;
                     }
                 }
@@ -237,8 +250,10 @@ static inline void handle_input(void) {
     handle_grammar();
     check(!strcmp(buf, "[production]"), "Failed to read [production], %s instead", buf);
     handle_production();
+    fclose(in);
     return;
 error:
+    fclose(in);
     fprintf(stderr, "failed to handle input\n");
     exit(80);
 }
@@ -303,29 +318,28 @@ error:
 static void handle_output(void) {
     printf("output table\n");
     fprintf(out, "#include <stdio.h>\n");
-    fprintf(out, "#include \"parser.h\"\n");
+    fprintf(out, "#include \"parser.h\"\n\n");
     output_table();
     output_productions();
+    fclose(out);
 }
 
 static void output_table() {
     int i, j;
     // output ll parser table
-    fprintf(out, "const int[][] LL_PARSE_TABLE = [\n");
+    fprintf(out, "const int LL_PARSE_TABLE[%d][%d] = {\n", x_end + 1, y_end + 1);
 
     // for each nonterminal
-    for (i = 0; i < x_end; i++) {
-        fprintf(out, "    [_");
+    for (i = 0; i <= x_end; i++) {
+        fprintf(out, "    {0");
         // for each terminal
-        for (j = 1; j < y_end; ++j) {
-            char s[10];
-            sprintf(s, "%d", table[i][j]);
-            fprintf(out, ", %s", s);
+        for (j = 1; j <= y_end; ++j) {
+            fprintf(out, ", %d", table[i][j]);
         }
-        fprintf(out, "]\n");
+        fprintf(out, "}%s\n", i == x_end? "" : ",");
     }
 
-    fprintf(out, "];\n");
+    fprintf(out, "};\n");
 }
 
 static void output_productions() {

@@ -8,7 +8,7 @@
 const char *usage(void);
 
 char in_name[1024] = "ll-spec.txt";
-char out_name[1024] = "compiler.c";
+char out_name[1024] = "../toy/parser.c";
 
 int main(int argc, char *argv[]) {
     int ch;
@@ -29,7 +29,7 @@ int main(int argc, char *argv[]) {
     }
 
     in = fopen(in_name, "r");
-    out = fopen(out_name, "rw+");
+    out = fopen(out_name, "w+");
 
     run(in, out);
     return 0;

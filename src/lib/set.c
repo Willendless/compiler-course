@@ -36,6 +36,7 @@ void Set_print(T *s) {
     struct set_entry *p;
 
     for (i = 0; i < s->bucket_size; ++i) {
+        if (s->buckets[i] == NULL) continue;
         for (p = s->buckets[i]; p; p = p->next) {
             printf("%d ", p->member);
         }
@@ -53,8 +54,10 @@ void Set_clear(T *s) {
     for (i = 0; i < s->bucket_size; ++i) {
         for (p = s->buckets[i]; p; p = q) {
             q = p->next;
-            free(q);
+            free(p);
+            s->cnt--;
         }
+        s->buckets[i] = NULL;
     } 
 }
 

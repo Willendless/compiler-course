@@ -52,6 +52,7 @@ void Table_clear(T *table) {
         for (p = table->buckets[i]; p; p = q) {
             q = p->next;
             free(q);
+            table->cnt--;
         }
     } 
 }
