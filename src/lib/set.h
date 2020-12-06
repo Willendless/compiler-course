@@ -24,7 +24,7 @@ void Set_clear_destroy(T *s);
 int Set_length(T *s);
 bool Set_member(T *s, const void *mem);
 int Set_put(T *s, const void *mem);
-void *Set_remove(T *s, const void *mem);
+void *Set_remove(T *s, void *mem);
 
 void Set_map(T *s, void apply(const void *mem, void *c1), void *c1);
 

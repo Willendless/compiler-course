@@ -25,7 +25,7 @@ T *Set_init(int hint,
         set->bucket_size = primes[i-1];
         set->cmp = cmp;
         set->hash = hash;
-        set->buckets = set + sizeof(T);
+        set->buckets = (struct set_entry **)(set + 1);
         return set;
 error:
         return NULL;
@@ -99,7 +99,7 @@ error:
     return -1;
 }
 
-void *Set_remove(T *s, const void *mem) {
+void *Set_remove(T *s, void *mem) {
     int index;
     struct set_entry **pp;
     struct set_entry *p;

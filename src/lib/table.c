@@ -30,15 +30,15 @@ T *Table_init(int hint,
     table->cnt = 0;
     table->cmp = cmp;
     table->hash = hash;
-    table->buckets = table + sizeof(T);
+    table->buckets = (struct t_entry **)(table + 1);
     return table;
 error:
     return NULL;
 }
 
-static void clear_entry(const void *key, void **value, void *c1) {
-    free(*value);
-}
+// static void clear_entry(const void *key, void **value, void *c1) {
+//     free(*value);
+// }
 
 void Table_clear(T *table) {
     // Table_map(table, clear_entry, NULL);
@@ -128,7 +128,7 @@ void *Table_put(T *table, const void *key, void *value) {
         check_mem(en);
         en->key = key;
         en->value = value;
-        en->next = table->buckets[index];
+        en->next = table->buckets[index]->next;
         table->buckets[index] = en;
         table->cnt++;
     }

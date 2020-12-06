@@ -56,7 +56,7 @@ int DArray_expand(DArray *arr) {
 
     size_t old_max = arr->max;
     check(DArray_resize(arr, old_max << 1) == 0, 
-          "Failed to expand array size to: %ld", old_max < 1);
+          "Failed to expand array size to: %d", old_max < 1);
 
     memset(arr->contents + old_max, 0, old_max);
     return 0;
