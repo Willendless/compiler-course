@@ -9,8 +9,8 @@ typedef struct {
     bool (*cmp) (const void *a, const void *b);
     unsigned (*hash) (const void *key);
     unsigned timestamp;
-    struct entry {
-        struct entry *next;
+    struct t_entry {
+        struct t_entry *next;
         const void *key;
         void *value;
     } **buckets;

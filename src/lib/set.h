@@ -8,8 +8,8 @@ typedef struct {
     int bucket_size; // bucket num
     bool (*cmp) (const void *a, const void *b);
     unsigned (*hash) (const void *mem);
-    struct entry {
-        struct entry *next;
+    struct set_entry {
+        struct set_entry *next;
         const void *member;
     } **buckets;
 } Set;

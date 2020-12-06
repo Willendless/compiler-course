@@ -19,7 +19,7 @@ T *Set_init(int hint,
 
         for (i = 1; primes[i] < hint; ++i) ;
 
-        set = (T *)malloc(sizeof(T) + primes[i-1] * sizeof(struct entry));
+        set = (T *)malloc(sizeof(T) + primes[i-1] * sizeof(struct set_entry));
         check_mem(set);
         set->cnt = 0;
         set->bucket_size = primes[i-1];
@@ -33,8 +33,8 @@ error:
 
 void Set_clear(T *s) {
     int i;
-    struct entry *p;
-    struct entry *q;
+    struct set_entry *p;
+    struct set_entry *q;
 
     assert(s != NULL);
     if (s->cnt == 0) return;
@@ -64,7 +64,7 @@ int Set_length(T *s) {
 
 bool Set_member(T *s, const void *mem) {
     unsigned int index;
-    struct entry *en;
+    struct set_entry *en;
 
     assert(s != NULL);
     assert(mem != NULL);
@@ -80,13 +80,13 @@ bool Set_member(T *s, const void *mem) {
 
 int Set_put(T *s, const void *mem) {
     unsigned int index;
-    struct entry *en;
+    struct set_entry *en;
     assert(s != NULL);
     assert(mem != NULL);
 
     if (!Set_member(s, mem)) {
         index = s->hash(mem) % s->bucket_size;
-        en = (struct entry *)malloc(sizeof(struct entry));
+        en = (struct set_entry *)malloc(sizeof(struct set_entry));
         check_mem(en);
         en->member = mem;
         en->next = s->buckets[index];
@@ -101,8 +101,8 @@ error:
 
 void *Set_remove(T *s, const void *mem) {
     int index;
-    struct entry **pp;
-    struct entry *p;
+    struct set_entry **pp;
+    struct set_entry *p;
     assert(s != NULL);
     assert(mem != NULL);
 
@@ -121,7 +121,7 @@ void *Set_remove(T *s, const void *mem) {
 
 void Set_map(T *s, void apply(const void *mem, void *c1), void *c1) {
     int i;
-    struct entry *p;
+    struct set_entry *p;
     assert(s != NULL && "Table should not be NULL");
     assert(apply);
     for (i = 0; i < s->bucket_size; ++i) {

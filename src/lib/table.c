@@ -42,8 +42,8 @@ static void clear_entry(const void *key, void **value, void *c1) {
 
 void Table_clear(T *table) {
     // Table_map(table, clear_entry, NULL);
-    struct entry *p;
-    struct entry *q;
+    struct t_entry *p;
+    struct t_entry *q;
     int i;
     assert(table != NULL && "Table should not be NULL");
 
@@ -61,7 +61,7 @@ void Table_map(T *table,
     void *c1) {
     int i;
     unsigned stamp;
-    struct entry *p;
+    struct t_entry *p;
 
     assert(table != NULL && "Table should not be NULL");
     assert(apply);
@@ -84,7 +84,7 @@ int Table_length(T *table) {
 }
 
 static inline void *search_entry(T *table, const void *key) {
-    struct entry *p;
+    struct t_entry *p;
     int index;
     assert(table != NULL);
 
@@ -99,7 +99,7 @@ static inline void *search_entry(T *table, const void *key) {
 }
 
 void *Table_get (T *table, const void *key) {
-    struct entry *p;
+    struct t_entry *p;
 
     assert(table != NULL && "Table should not be NULL.");
     assert(table->hash != NULL);
@@ -111,8 +111,8 @@ void *Table_get (T *table, const void *key) {
 
 void *Table_put(T *table, const void *key, void *value) {
     int index;
-    struct entry *p;
-    struct entry *en;
+    struct t_entry *p;
+    struct t_entry *en;
     void *prev;
     assert(table != NULL && "Table should not be NULL.");
     assert(key != NULL && "Key should not be NULL.");
@@ -124,7 +124,7 @@ void *Table_put(T *table, const void *key, void *value) {
     } else {
         index = table->hash(key) % table->bucket_size;
         prev = NULL;
-        en = (struct entry*)malloc(sizeof(struct entry));
+        en = (struct t_entry*)malloc(sizeof(struct t_entry));
         check_mem(en);
         en->key = key;
         en->value = value;
