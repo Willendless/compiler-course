@@ -12,6 +12,7 @@ static void handle_output(void);
 static void gen_first_sets(void);
 static void gen_follow_sets(void);
 static void gen_table(void);
+static void gen_firstplus_sets(void);
 
 static Set *get_grammar_set(DArray *arr, const char *grammar);
 static void union_without_epsilon(Set *dest, Set *src);
@@ -36,6 +37,7 @@ DArray *production_arr;
 // first and follow set
 DArray *first;
 DArray *follow;
+DArray *firstplus;
 // buf
 char buf[1024];
 // output table
@@ -51,7 +53,23 @@ void init(void) {
     production_arr = DArray_init(70, 100);
     first = DArray_init(sizeof(Set), 70);
     follow = DArray_init(sizeof(Set), 100);
-    DArray_push(grammar_arr, "dummy entry");
+    firstplus = DArray_init(sizeof(Set), 100);
+    char *dum = DArray_new(grammar_arr);
+    strcpy(dum, "dummy entry");
+    DArray_push(grammar_arr, dum);
+}
+
+void release(void) {
+    int i;
+    DArray_clear_destroy(grammar_arr);
+    Table_clear_destroy(grammar_table);
+    // production_arr
+    for (i = 0; i <= production_arr->end; ++i) {
+        DArray_clear_destroy(DArray_get(production_arr, i));
+    }
+    Set_clear_destroy(first);
+    Set_clear_destroy(follow);
+    Set_clear_destroy(firstplus);
 }
 
 void run(FILE *_in, FILE *_out) {
@@ -61,30 +79,71 @@ void run(FILE *_in, FILE *_out) {
     handle_input(); // parse input file
     gen_table(); // table generation
     handle_output(); // generate output file
+    release(); // release memory
 }
 
 void gen_table(void) {
-    int i, j;
+    int i, j, k;
+    int epsilon_index = Table_get(grammar_table, "epsilon");
     gen_first_sets();
     gen_follow_sets();
+    gen_firstplus_sets();
     // TODO(ljr): table generatation algo
-    x_end = grammar_arr->end - non_index + 1;
-    y_end = non_index;
+    x_end = grammar_arr->end - non_index;
+    y_end = non_index - 1;
     table = (int **)calloc(x_end + 1, sizeof(int *));
     for (i = 0; i <= x_end; ++i) {
         table[i] = (int *)calloc(y_end + 1, sizeof(int));
     }
+
     // for each nonterminal
     for (i = non_index; i <= grammar_arr->end; ++i) {
-        char *grammar = DArray_get(grammar_arr, i);
-        Set *fir = get_grammar_set(first, grammar);
-        Set *fol = get_grammar_set(follow, grammar);
-        // for each terminal
-        for (j = 1; j < non_index; ++j) {
-            char *terminal = DArray_get(grammar_arr, j);
-            if (Set_member(fir, terminal)
-                || Set_member(fol, terminal)) {
-                    table[i][j] = i;
+        printf("%d %s: ", i, DArray_get(grammar_arr, i));
+        int end = ((DArray *)DArray_get(production_arr, i))->end;
+        // for each production with head = current nonterminal
+        for (j = 0; j <= end; ++j) {
+            int index = i - non_index + j;
+            // for each terminal
+            for (k = 1; k < non_index; ++k) {
+                if (Set_member(DArray_get(firstplus, index), k)) {
+                    printf("   %-5s", DArray_get(grammar_arr, k));
+                    table[i - non_index][k] = index;
+                }
+            }
+        }
+        printf("\n");
+    }
+}
+
+static void gen_firstplus_sets(void) {
+    int i, j, k;
+    int epsilon_index = Table_get(grammar_table, "epsilon");
+    // for each production head
+    for (i = non_index; i <= production_arr->end; ++i) {
+        DArray *productions = DArray_get(production_arr, i);
+        // for each production
+        for (j = 0; j <= productions->end; ++j) {
+            // calc first+ set for head -> body
+            // = first(head->body) if epsilon not in first(head->body) 
+            // = first(head->body) + follow(head) if epsilon in first(head->body)
+            DArray *production = DArray_get(productions, j);
+            Set *fp = Set_init(10, cmp_int, hash_int);
+            bool flag = TRUE;
+            DArray_push(firstplus, fp);
+            // for each product
+            for (k = 0; k <= production->end; ++k) {
+                Set *tmp = DArray_get(first, DArray_get(production, k));
+                Set_union(fp, tmp);
+                Set_remove(fp, epsilon_index);
+                if (!Set_member(tmp, epsilon_index)) {
+                    flag = FALSE;
+                    break;
+                }
+            }
+            // epsilon is in first[product[i]], i from 0 to production->end
+            if (flag) {
+                Set_put(fp, epsilon_index);
+                Set_union(fp, DArray_get(follow, i));
             }
         }
     }
@@ -134,14 +193,28 @@ static void gen_first_sets(void) {
             cur_cnt = Set_length(s_head);
             if (prev_cnt != cur_cnt) {
                 // first sets changed, loop continue
-                printf("first set: %s %d %d\n", DArray_get(grammar_arr, i), prev_cnt, cur_cnt);
+                // printf("first set: %s %d %d\n", DArray_get(grammar_arr, i), prev_cnt, cur_cnt);
                 // Set_print(s_head);
                 flag |= TRUE;
             }
         }
     }
+    // for (i = 1; i <= grammar_arr->end; ++i) {
+    //     Set_print(DArray_get(first, i));
+    // }
+    printf("first sets:\n");
     for (i = 1; i <= grammar_arr->end; ++i) {
-        Set_print(DArray_get(first, i));
+        Set *s = DArray_get(first, i);
+        printf("%s:", DArray_get(grammar_arr, i));
+        for (j = 0; j < s->bucket_size; ++j) {
+            struct set_entry *p = s->buckets[j];
+            if (p) {
+                for (; p; p = p->next) {
+                    printf("   %-5s", DArray_get(grammar_arr, p->member));
+                }
+            }
+        }
+        printf("\n");
     }
 }
 

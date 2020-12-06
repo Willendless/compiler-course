@@ -80,6 +80,11 @@ void Table_destroy(T *table) {
     free(table);
 }
 
+void Table_clear_destroy(T *table) {
+    Table_clear(table);
+    Table_destroy(table);
+}
+
 int Table_length(T *table) {
     return table->cnt;
 }
