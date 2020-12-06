@@ -2,7 +2,7 @@ CFLAGS=-g -Wall -Wextra -Isrc -rdynamic $(OPTFLAGS)
 LIBS=$(OPTLIBS) -ldl
 PREFIX?=/usr/local
 
-SOURCES=$(wildcard *.c)
+SOURCES=$(wildcard *.c ../lib/*.c)
 OBJECTS=$(patsubst %.c,%.o,$(SOURCES))
 
 TARGET=llgen
@@ -10,6 +10,8 @@ TARGET=llgen
 all: $(TARGET)
 
 $(TARGET): $(OBJECTS)
+	mv ../lib/*.o .
+	$(CC) $(CFLAGS) -o $@ *.o
 
 $(OBJECTS): CFLAGS += -c
 $(OBJECTS): $(SOURCES)
