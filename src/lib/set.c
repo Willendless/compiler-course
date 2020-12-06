@@ -19,7 +19,7 @@ T *Set_init(int hint,
 
         for (i = 1; primes[i] < hint; ++i) ;
 
-        set = (T *)malloc(sizeof(T) + primes[i-1] * sizeof(struct set_entry));
+        set = (T *)calloc(1, sizeof(T) + primes[i-1] * sizeof(struct set_entry));
         check_mem(set);
         set->cnt = 0;
         set->bucket_size = primes[i-1];
@@ -86,7 +86,7 @@ int Set_put(T *s, const void *mem) {
 
     if (!Set_member(s, mem)) {
         index = s->hash(mem) % s->bucket_size;
-        en = (struct set_entry *)malloc(sizeof(struct set_entry));
+        en = (struct set_entry *)calloc(1, sizeof(struct set_entry));
         check_mem(en);
         en->member = mem;
         en->next = s->buckets[index];

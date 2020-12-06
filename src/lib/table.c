@@ -24,7 +24,7 @@ T *Table_init(int hint,
     int i;
 
     for (i = 1; primes[i] < hint; i++) ;
-    table = (T *)malloc(sizeof(T) + primes[i-1] * sizeof(*(table->buckets)));
+    table = (T *)calloc(1, sizeof(T) + primes[i-1] * sizeof(*(table->buckets)));
     check_mem(table);
     table->bucket_size = primes[i-1];
     table->cnt = 0;
@@ -90,7 +90,7 @@ static inline void *search_entry(T *table, const void *key) {
 
     p = NULL;
     index = table->hash(key) % table->bucket_size;
-    for (p = table->buckets[index]; p; p++) {
+    for (p = table->buckets[index]; p; p = p->next) {
         if (table->cmp(p->key, key) == TRUE) {
             break;
         }
@@ -124,11 +124,12 @@ void *Table_put(T *table, const void *key, void *value) {
     } else {
         index = table->hash(key) % table->bucket_size;
         prev = NULL;
-        en = (struct t_entry*)malloc(sizeof(struct t_entry));
+        en = (struct t_entry*)calloc(1, sizeof(struct t_entry));
         check_mem(en);
         en->key = key;
         en->value = value;
-        en->next = table->buckets[index]->next;
+
+        en->next = table->buckets[index];
         table->buckets[index] = en;
         table->cnt++;
     }
