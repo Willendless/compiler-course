@@ -470,7 +470,7 @@ static void output_productions() {
     int i, j, k, m;
     int i_production;
     fprintf(out, "// begin index of nonterminal\n");
-    fprintf(out, "int non_index = %d;\n", non_index);
+    fprintf(out, "const int non_index = %d;\n", non_index);
     fprintf(out, "// production table\n");
     fprintf(out, "const int productions[%d][%d] = {\n", production_arr->end - non_index + 1, max_product);
     // for productions with same head
