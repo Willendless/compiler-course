@@ -25,6 +25,7 @@ void DArray_clear(DArray *arr) {
     if (arr) {
         for (i = 0; i < arr->end; ++i) {
             if (arr->contents[i]) {
+                // printf("%s\n", arr->contents[i]);
                 free(arr->contents[i]);
             }
         }

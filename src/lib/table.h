@@ -21,6 +21,7 @@ typedef struct {
 T *Table_init(int hint, bool cmp(const void *x, const void *y), unsigned hash(const void *key));
 void Table_clear(T *table);
 void Table_destroy(T *table);
+void Table_clear_destroy(T *table);
 void Table_map(T *table, void apply(const void *key, void **value, void *c1), void *c1);
 int Table_length(T *table);
 

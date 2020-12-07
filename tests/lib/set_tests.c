@@ -17,7 +17,7 @@ static unsigned hash(const void *mem) {
 static char *test_init() {
     s = Set_init(500, cmp, hash);
     mu_assert(s != NULL, "Set_init failed.");
-    mu_assert(s->bucket_size == 509, "Set_init bucket size is wrong.");
+    mu_assert(s->bucket_size == 73, "Set_init bucket size is wrong.");
     mu_assert(s->buckets != NULL, "Set_init buckets failed.");
     mu_assert(s->cnt == 0, "Set_init cnt equals 0.");
     mu_assert(s->hash != NULL && s->cmp != NULL, "Set_init hash & cmp cannot be NULL.");

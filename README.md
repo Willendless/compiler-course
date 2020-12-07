@@ -17,7 +17,7 @@
 
 ## parser
 
-+ [ ] LL(1) table generator
++ [x] LL(1) table generator
 + [ ] LL parser
 + [ ] error handling
 
