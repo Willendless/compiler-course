@@ -8,7 +8,7 @@
 const char *usage(void);
 
 char in_name[1024] = "ll-spec.txt";
-char out_name[1024] = "../toy/parser.c";
+char out_name[1024] = "../toy/parser_tmp.c";
 
 int main(int argc, char *argv[]) {
     int ch;

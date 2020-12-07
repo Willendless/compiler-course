@@ -47,6 +47,8 @@ char buf[1024];
 int **table;
 int x_end;
 int y_end;
+// output productions
+int max_product;
 
 void init(void) {
     // index -> grammar
@@ -399,9 +401,11 @@ error:
 
 static inline void handle_production() {
     int index;
+    int product_cnt;
     DArray *productions;
     DArray *production;
 
+    product_cnt = 0;
     while (fscanf(in, "%s", buf) != EOF) {
         // get head's index
         index = Table_get(grammar_table, buf);
@@ -419,11 +423,14 @@ static inline void handle_production() {
             // read each grammar
             fscanf(in, "%s", buf);
             while (strcmp(buf, "|") && strcmp(buf, "$")) {
+                product_cnt++;
                 index = Table_get(grammar_table, buf);
                 check(index != NULL, "Unknown grammar: %s.", buf);
                 DArray_push(production, (void *)index);
                 fscanf(in, "%s", buf);
             }
+            if (product_cnt > max_product) max_product = product_cnt;
+            product_cnt = 0;
         }
     }
 
@@ -443,6 +450,7 @@ static void handle_output(void) {
 static void output_table() {
     int i, j;
     // output ll parser table
+    fprintf(out, "// ll(1) parser table\n");
     fprintf(out, "const int LL_PARSE_TABLE[%d][%d] = {\n", x_end + 1, y_end + 1);
 
     // for each nonterminal
@@ -459,11 +467,35 @@ static void output_table() {
 }
 
 static void output_productions() {
-    fprintf(out, "\n");
-    fprintf(out, "\n");
+    int i, j, k, m;
+    int i_production;
+    fprintf(out, "// begin index of nonterminal\n");
+    fprintf(out, "int non_index = %d;\n", non_index);
+    fprintf(out, "// production table\n");
+    fprintf(out, "const int productions[%d][%d] = {\n", production_arr->end - non_index + 1, max_product);
+    // for productions with same head
+    i_production = 0;
+    for (i = non_index; i <= production_arr->end; ++i) {
+        DArray *productions = DArray_get(production_arr, i);
+        // for each production
+        for (j = 0; j <= productions->end; ++j) {
+            fprintf(out, "    ");
+            for (m = 0; m < 5 && j <= productions->end; ++m, ++j) {
+                fprintf(out, "{");
+                DArray *production = DArray_get(productions, j);
+                // for each product
+                for (k = 0; k <= production->end; ++k) {
+                    fprintf(out, "%s%d", k == 0? "" : ", ", DArray_get(production, k));
+                }
+                fprintf(out, "},%s", m == 2? "" : " ");
+            }
+            fprintf(out, "\n");
+        }
+    }
 
-    fprintf(out, "const int** productions");
+    fprintf(out, "};\n");
 }
+
 
 static bool cmp_str(const void *a, const void *b) {
     return !strcmp(a, b) ? TRUE : FALSE;
