@@ -22,6 +22,9 @@ static unsigned hash_str(const void *key);
 static bool cmp_int(const void *a, const void *b);
 static unsigned hash_int(const void *key);
 
+static void print_firstfollow_set(DArray *arr);
+static void print_firstplus_set(void);
+
 static void output_table(void);
 static void output_productions(void);
 
@@ -83,7 +86,7 @@ void run(FILE *_in, FILE *_out) {
 }
 
 void gen_table(void) {
-    int i, j, k;
+    int i, j, k, i_firstplus;
     int epsilon_index = Table_get(grammar_table, "epsilon");
     gen_first_sets();
     gen_follow_sets();
@@ -97,19 +100,20 @@ void gen_table(void) {
     }
 
     // for each nonterminal
+    i_firstplus = 0;
     for (i = non_index; i <= grammar_arr->end; ++i) {
         printf("%d %s: ", i, DArray_get(grammar_arr, i));
         int end = ((DArray *)DArray_get(production_arr, i))->end;
         // for each production with head = current nonterminal
         for (j = 0; j <= end; ++j) {
-            int index = i - non_index + j;
             // for each terminal
             for (k = 1; k < non_index; ++k) {
-                if (Set_member(DArray_get(firstplus, index), k)) {
+                if (Set_member(DArray_get(firstplus, i_firstplus), k)) {
                     printf("   %-5s", DArray_get(grammar_arr, k));
-                    table[i - non_index][k] = index;
+                    table[i - non_index][k] = i_firstplus;
                 }
             }
+            i_firstplus++;
         }
         printf("\n");
     }
@@ -128,6 +132,7 @@ static void gen_firstplus_sets(void) {
             // = first(head->body) + follow(head) if epsilon in first(head->body)
             DArray *production = DArray_get(productions, j);
             Set *fp = Set_init(10, cmp_int, hash_int);
+            check(fp != NULL, "Failed to init set");
             bool flag = TRUE;
             DArray_push(firstplus, fp);
             // for each product
@@ -147,6 +152,11 @@ static void gen_firstplus_sets(void) {
             }
         }
     }
+    printf("\nfirstplus:\n");
+    print_firstplus_set();
+    printf("\n");
+error:
+    return;
 }
 
 static void gen_first_sets(void) {
@@ -199,23 +209,9 @@ static void gen_first_sets(void) {
             }
         }
     }
-    // for (i = 1; i <= grammar_arr->end; ++i) {
-    //     Set_print(DArray_get(first, i));
-    // }
     printf("first sets:\n");
-    for (i = 1; i <= grammar_arr->end; ++i) {
-        Set *s = DArray_get(first, i);
-        printf("%s:", DArray_get(grammar_arr, i));
-        for (j = 0; j < s->bucket_size; ++j) {
-            struct set_entry *p = s->buckets[j];
-            if (p) {
-                for (; p; p = p->next) {
-                    printf("   %-5s", DArray_get(grammar_arr, p->member));
-                }
-            }
-        }
-        printf("\n");
-    }
+    print_firstfollow_set(first);
+    printf("\n");
 }
 
 static void union_without_epsilon(Set *dest, Set *src) {
@@ -264,15 +260,12 @@ static void gen_follow_sets(void) {
     // put eof to follow(start)
     s_head = DArray_get(follow, non_index);
     check(s_head != NULL, "Failed to get head follow set.");
-    Set_put(DArray_get(follow, non_index), Table_get(grammar_table, "eof"));
+    Set_put(s_head, Table_get(grammar_table, "eof"));
     //fixed-point
     while (flag) {
         flag = FALSE;
         // for each production head
         for (i = non_index; i <= production_arr->end; ++i) {
-            // only if epsilon in first set that follow set matters
-            if (!Set_member(DArray_get(first, i), epsilon_index))
-                continue;
             DArray *productions = DArray_get(production_arr, i);
             // for each production with the same head
             for (j = 0; j <= productions->end; ++j) {
@@ -303,16 +296,64 @@ static void gen_follow_sets(void) {
                     cur_cnt = Set_length(cur);
                     check(cur_cnt >= prev_cnt, "Follow set elements removed.");
                     if (cur_cnt > prev_cnt) {
-                        printf("follow set: %s %d -> %d\n", DArray_get(grammar_arr, k), cur_cnt, prev_cnt);
+                        // printf("follow set: %s %d -> %d\n", DArray_get(grammar_arr, k), cur_cnt, prev_cnt);
                         flag = TRUE;
                     }
                 }
             }
         }
     }
+    printf("\nfollow sets:\n");
+    print_firstfollow_set(follow);
+    printf("\n");
     return;
 error:
     exit(80);
+}
+
+static inline void print_firstplus_set() {
+    int i, j, k;
+    int cnt;
+
+    j = 0;
+    cnt = 0;
+    for (i = 0; i <= firstplus->end; ++i) {
+        Set *s = DArray_get(firstplus, i);
+        if (cnt > ((DArray *)DArray_get(production_arr, non_index+j))->end) {
+            cnt = 0;
+            j++;
+        }
+        printf("%s: ", DArray_get(grammar_arr, non_index+j));
+        for (k = 0; k < s->bucket_size; ++k) {
+            struct set_entry *p = s->buckets[k];
+            if (p) {
+                for (; p; p = p->next) {
+                    printf("   %-5s", DArray_get(grammar_arr, p->member));
+                }
+            }
+        }
+        printf("\n");
+        cnt++;
+    }
+}
+
+static inline void print_firstfollow_set(DArray *arr) {
+    int i, j;
+    assert(arr != NULL);
+
+    for (i = non_index; i <= grammar_arr->end; ++i) {
+        Set *s = DArray_get(arr, i);
+        printf("%s:", DArray_get(grammar_arr, i));
+        for (j = 0; j < s->bucket_size; ++j) {
+            struct set_entry *p = s->buckets[j];
+            if (p) {
+                for (; p; p = p->next) {
+                    printf("   %-5s", DArray_get(grammar_arr, p->member));
+                }
+            }
+        }
+        printf("\n");
+    }
 }
 
 static inline void handle_input(void) {
