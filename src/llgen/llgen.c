@@ -86,7 +86,7 @@ void run(FILE *_in, FILE *_out) {
 }
 
 void gen_table(void) {
-    int i, j, k, i_firstplus;
+    int i, j, k, i_firstplus, i_production;
     int epsilon_index = Table_get(grammar_table, "epsilon");
     gen_first_sets();
     gen_follow_sets();
@@ -100,7 +100,8 @@ void gen_table(void) {
     }
 
     // for each nonterminal
-    i_firstplus = 0;
+    i_firstplus = 0; // traverse production index from 0
+    i_production = 1; // output production index begin from 1
     for (i = non_index; i <= grammar_arr->end; ++i) {
         printf("%d %s: ", i, DArray_get(grammar_arr, i));
         int end = ((DArray *)DArray_get(production_arr, i))->end;
@@ -110,10 +111,11 @@ void gen_table(void) {
             for (k = 1; k < non_index; ++k) {
                 if (Set_member(DArray_get(firstplus, i_firstplus), k)) {
                     printf("   %-5s", DArray_get(grammar_arr, k));
-                    table[i - non_index][k] = i_firstplus;
+                    table[i - non_index][k] = i_production;
                 }
             }
             i_firstplus++;
+            i_production++;
         }
         printf("\n");
     }
