@@ -27,6 +27,7 @@ static void print_firstplus_set(void);
 
 static void output_table(void);
 static void output_productions(void);
+static void output_grammar_map(void);
 
 // in, out
 FILE* in;
@@ -442,9 +443,28 @@ static void handle_output(void) {
     printf("output table\n");
     fprintf(out, "#include <stdio.h>\n");
     fprintf(out, "#include \"parser.h\"\n\n");
+    output_grammar_map();
     output_table();
     output_productions();
     fclose(out);
+}
+
+static void output_grammar_map(void) {
+    int i;
+
+    // for (i = non_index; i <= grammar_arr->end; ++i) {
+    //     char *grammar = DArray_get(grammar_arr, i);
+    //     if (!strcmp(grammar, "_")) continue;
+    //     fprintf(out, "#define %s %d\n", DArray_get(grammar_arr, i), i-non_index);
+    // }
+
+    fprintf(out, "#define %s %d\n", "eof", Table_get(grammar_table, "eof"));
+    fprintf(out, "// name of nonterminal\n");
+    fprintf(out, "const char *NONTERMINAL_NAME[%d] = {\n", grammar_arr->end - non_index + 1);
+    for (i = non_index; i <= grammar_arr->end; ++i) {
+        fprintf(out, "\"%s\",\n", DArray_get(grammar_arr, i));
+    }
+    fprintf(out, "};\n");
 }
 
 static void output_table() {
@@ -472,7 +492,7 @@ static void output_productions() {
     fprintf(out, "// begin index of nonterminal\n");
     fprintf(out, "const int non_index = %d;\n", non_index);
     fprintf(out, "// production table\n");
-    fprintf(out, "const int productions[%d][%d] = {\n", production_arr->end - non_index + 1, max_product);
+    fprintf(out, "const int productions[%d][%d] = {\n", firstplus->end + 1, max_product);
     // for productions with same head
     i_production = 0;
     for (i = non_index; i <= production_arr->end; ++i) {
