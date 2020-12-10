@@ -1,5 +1,5 @@
 const char *token_type_string[] = {
-    "INT", "REAL", "IF", "THEN", "ELSE", "WHILE",
+    "PLACE_HOLDER", "INT", "REAL", "IF", "THEN", "ELSE", "WHILE",
     "IDENTIFIER", "NUMBER",
     "LEFT_PAREN", "RIGHT_PAREN",
     "LEFT_BRACE", "RIGHT_BRACE",

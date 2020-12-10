@@ -3,7 +3,7 @@
 
 typedef enum {
     // keywords
-    T_INT, T_REAL, T_IF, T_THEN, T_ELSE, T_WHILE,
+    T_INT=1, T_REAL, T_IF, T_THEN, T_ELSE, T_WHILE,
 
     // literal
     T_IDENTIFIER, T_NUMBER,
