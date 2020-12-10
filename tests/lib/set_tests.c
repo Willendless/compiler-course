@@ -58,8 +58,12 @@ static char *test_union() {
 }
 
 static char *test_destroy() {
-    Set_clear_destroy(s);
-    Set_clear_destroy(a);
+    Set_clear(s);
+    mu_assert(s->cnt == 0, "Failed to clear set");
+    Set_clear(a);
+    mu_assert(a->cnt == 0, "Failed to clear set");
+    Set_destroy(s);
+    Set_destroy(a);
     return NULL;
 }
 
