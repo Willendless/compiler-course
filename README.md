@@ -18,8 +18,9 @@
 ## parser
 
 + [x] LL(1) table generator
-+ [ ] LL parser
++ [x] LL parser
 + [ ] error handling
++ [ ] 多叉树生成算法
 
 ## code generation
 

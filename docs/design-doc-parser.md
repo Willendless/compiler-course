@@ -52,7 +52,7 @@ loop {
 
 ```
 // 节点类型
-typedef enum {AST_Stmt, AST_Expr, AST_Nont} NodeType;
+typedef enum {AST_Stmt, AST_Expr, AST_Term} NodeType;
 // stmt节点类型
 typedef enum {
     STMT_PROGRAM
