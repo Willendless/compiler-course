@@ -5,7 +5,7 @@
 #include "../lib/darray.h"
 
 // 节点类型
-typedef enum {AST_Stmt, AST_Expr, AST_Nont} NodeType;
+typedef enum {AST_Stmt, AST_Expr, AST_Term} NodeType;
 
 // stmt节点类型
 typedef enum {
@@ -36,13 +36,14 @@ typedef struct {
     NodeType type; // whether or not terminal
     NonterminalType subtype; // what type of nonterminal
     union {
-        Token *token; // terminal
+        Token token; // terminal
         char *name; // non-terminal
     } attr;
     int index; // record next children to be accessed
     DArray *ptrs; // arr for children
 } AstNode;
 
-AstNode *AstNode_init(NodeType type, NonterminalType subtype, Token *token, char *s);
+AstNode *AstNode_init(NodeType type, NonterminalType subtype, Token token, char *s);
+void AstNode_print(AstNode *root, int level);
 
 #endif

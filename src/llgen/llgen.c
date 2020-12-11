@@ -459,6 +459,7 @@ static void output_grammar_map(void) {
     // }
 
     fprintf(out, "#define %s %d\n", "eof", Table_get(grammar_table, "eof"));
+    fprintf(out, "#define %s %d\n", "epsilon", Table_get(grammar_table, "epsilon"));
     fprintf(out, "// name of nonterminal\n");
     fprintf(out, "const char *NONTERMINAL_NAME[%d] = {\n", grammar_arr->end - non_index + 1);
     for (i = non_index; i <= grammar_arr->end; ++i) {
@@ -493,6 +494,7 @@ static void output_productions() {
     fprintf(out, "const int non_index = %d;\n", non_index);
     fprintf(out, "// production table\n");
     fprintf(out, "const int productions[%d][%d] = {\n", firstplus->end + 1, max_product);
+    fprintf(out, "{},\n"); // place holder
     // for productions with same head
     i_production = 0;
     for (i = non_index; i <= production_arr->end; ++i) {

@@ -47,6 +47,7 @@ static char *test_size() {
 
 static char *test_destory() {
     Table_destroy(t);
+    return NULL;
 }
 
 static char *test_all() {

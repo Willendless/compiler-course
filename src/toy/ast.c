@@ -6,7 +6,7 @@
 
 #define T AstNode
 
-T *AstNode_init(NodeType type, NonterminalType subtype, Token *token, char *s) {
+T *AstNode_init(NodeType type, NonterminalType subtype, Token token, char *s) {
     T *node;
     node = (T *)calloc(1, sizeof(T)); 
     check_mem(node);
@@ -15,8 +15,7 @@ T *AstNode_init(NodeType type, NonterminalType subtype, Token *token, char *s) {
     node->subtype = subtype;
     switch (type) {
     // non-terminal
-    case AST_Nont:
-        check(token != NULL, "Pass NULL token to AstNode init");
+    case AST_Term:
         node->attr.token = token;
         break;
     // expression
@@ -43,4 +42,24 @@ void AstNode_record(T *node, int x) {
 // clear both each node and ptrs in them
 void AstNode_clear(T *root) {
 
+}
+
+// naive implementation of printing ast tree
+void AstNode_print(AstNode *root, int level) {
+    int i;
+    if (root == NULL) return;
+    // print whitespace
+    for (i = 0; i < level - 1; ++i) {
+        printf("  ");
+    }
+    // printf terminal or non-terminal
+    if (root->type == AST_Term) {
+        printf("%.*s\n", root->attr.token.length, root->attr.token.start);
+    } else {
+        printf("%s\n", root->attr.name);
+    }
+    // call each child
+    for (i = 0; i <= root->ptrs->end; ++i) {
+        AstNode_print(DArray_get(root->ptrs, i), level + 1);
+    }
 }
