@@ -19,17 +19,23 @@
 
 + [x] LL(1) table generator
 + [x] LL parser
++ [x] syntax tree output
 + [ ] error handling
+
+## syntactic analysis
+
++ [ ] 符号表
++ [ ] 语义分析
 
 ## code generation
 
-+ [ ] 符号表
 + [ ] 三地址码生成
++ [ ] 代码优化
 
 ## virtual machine
 
-+ [ ] bytecode generator
-+ [ ] vm
++ [ ] bytecode生成
++ [ ] 虚拟机实现
 
 ## visualization
 
@@ -51,3 +57,5 @@
 - [ ] OOP特性
 
 ## reference
+
+- *Engineering a compiler*
