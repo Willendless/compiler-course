@@ -302,6 +302,6 @@ static inline void handle_panic(PanicType type) {
                 word = scan_token();
             }
         }
-        // Stack_pop(stack);
+        Stack_pop(stack);
     }
 }

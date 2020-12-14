@@ -283,7 +283,7 @@ static inline T make_token(TT token_type) {
 static inline T error_token(const char *msg) {
     Token t = make_token(T_ERROR);
     char tmp[100];
-    sprintf(tmp, "%.*s", t.length, t.start);
+    sprintf(tmp, "Invalid token \"%.*s\"", t.length, t.start);
     report_error(LEX_ERROR, t.line_num, t.line_pos, tmp);
     return scan_token();
 }
