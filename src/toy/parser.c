@@ -5,6 +5,7 @@
 #include "lib/stack.h"
 #include "utils/bool.h"
 #include "token.h"
+#include "compiler.h"
 
 #define T Token
 
@@ -64,40 +65,79 @@ const int productions[28][8] = {
     {18, 42, 41}, {19, 42, 41}, {28},
     {7}, {8}, {9, 38, 10},
 };
+// snychronized set
+const int SYNCHRONIZED_SET[14][29] = {
+{11 ,27},
+{3 ,5 ,7 ,6 ,11 ,12},
+{3 ,7 ,6 ,5 ,11 ,12 ,27},
+{3 ,6 ,7 ,11 ,12 ,28},
+{3 ,7 ,6 ,5 ,11 ,12},
+{3 ,7 ,5 ,6 ,11 ,12},
+{3 ,6 ,5 ,7 ,11 ,12},
+{7 ,10 ,8 ,9},
+{7 ,8 ,9 ,21 ,23 ,22 ,25 ,24},
+{7 ,10 ,9 ,8 ,15 ,22 ,23 ,21 ,24 ,25},
+{10 ,15 ,17 ,16 ,22 ,23 ,21 ,24 ,25 ,28},
+{7 ,10 ,8 ,9 ,15 ,16 ,17 ,22 ,23 ,21 ,24 ,25},
+{10 ,15 ,16 ,17 ,19 ,18 ,22 ,23 ,21 ,24 ,25 ,28},
+{7 ,10 ,9 ,8 ,15 ,18 ,19 ,16 ,17 ,22 ,23 ,21 ,24 ,25},
+};
+
+typedef enum {
+TERM_PANIC, NONTERM_PANIC
+} PanicType;
 
 static void error(Token t);
 static inline AstNode *make_node(int index);
 static inline int action(int focus, Token lookahead);
+static inline void handle_panic(PanicType type);
 
 const Token empty = {};
 const Token token_epsilon = {"epsilon", 8};
 
+bool PANIC;
+T word;
+void *focus;
+Stack *stack;
+
 AstNode *parse(void) {
     int i;
-    T word = scan_token();
-    Stack *stack = Stack_init();
+
+    PANIC = FALSE;
+    stack = Stack_init();
     Stack *ast_stack = Stack_init();
     NonterminalType subtype = {STMT_PROGRAM};
     AstNode *root = AstNode_init(AST_Stmt, subtype, empty, NONTERMINAL_NAME[0]);
     DArray *top = DArray_init(sizeof(AstNode), 2);
     DArray_push(top, 1);
     DArray_push(top, root);
-    void *focus;
+
     // init stack
+    word = scan_token();
     Stack_push(stack, eof);
     Stack_push(stack, non_index);
     Stack_push(ast_stack, top);
     focus = Stack_top(stack);
-    while (TRUE) {
-        printf("cur focus: %s, cur word: %s\n", focus < non_index? token_type_string[(int)focus] : NONTERMINAL_NAME[(int)(focus - non_index)], token_type_string[word.type]);
+
+    while (Stack_length(stack) > 0) {
+        // log_info("cur focus: %s, cur word: %s", focus < non_index? token_type_string[(int)focus] : NONTERMINAL_NAME[(int)(focus - non_index)], token_type_string[word.type]);
         // TODO(ljr): finish parser
         if (focus == eof && word.type == T_EOF) {
-            // success 
+            if (PANIC) return NULL;
             return root;
         } else if (focus < non_index || focus == T_EOF) {
+            //
+            // the top of the analysis stack is a terminal grammar
+            //
             if (focus == word.type || focus == epsilon) {
-                // analysis stack
                 Stack_pop(stack);
+
+                if (PANIC) {
+                    if (focus != epsilon) word = scan_token();
+                    focus = Stack_top(stack);
+                    continue;
+                }
+
                 // at least proceed parent ast node
                 // at most proceed multiple ancestors' nodes
                 while (TRUE) {
@@ -133,9 +173,6 @@ AstNode *parse(void) {
                         //
                         // update parent_nodes' index in next iteration 
                         //
-                        // printf("--------------\n");
-                        // AstNode_print(node, 1);
-                        // printf("--------------\n");
                     } else {
                         // index proceed
                         DArray_set(nodes, 0, cur_index+1);
@@ -144,15 +181,16 @@ AstNode *parse(void) {
                 }
                 // lookahead token succeed
                 if (focus != epsilon) word = scan_token();
-                // printf("token: %.*s\n", word.length, word.start);
             } else {
-                // TODO(ljr): failure recovery
-                error(word);
-                return NULL;
+                handle_panic(TERM_PANIC);
             }
+
         } else {
+            //
+            // the top of the analysis stack is a non-terminal grammar
+            //
             int next_production = action(focus, word);
-            printf("next_production: %d\n", next_production);
+            // log_info("next_production: %d", next_production);
             if (next_production > 0) {
                 // init current level of ast subtree
                 // first element set to the index of current processed node
@@ -168,7 +206,7 @@ AstNode *parse(void) {
                     // product exists and not epsilon
                     if (product > 0) {
                         // TODO(ljr): should we push epsilon here
-                        printf("push %d %s\n", product, product < non_index? token_type_string[product] : NONTERMINAL_NAME[product - non_index]);
+                        // log_info("push %d %s", product, product < non_index? token_type_string[product] : NONTERMINAL_NAME[product - non_index]);
                         Stack_push(stack, (void *)product);
                         // push astnode into nodes
                         AstNode * n = make_node(product);
@@ -178,21 +216,21 @@ AstNode *parse(void) {
                         if (product == epsilon) n->attr.token = token_epsilon;
                         // push into nodes
                         DArray_set(nodes, i + 1, n);
-                        // printf("set nodes: %d\n", i+1);
                     }
                 }
-                printf("push product finished.\n");
+                // log_info("push product finished.");
                 // push nodes into ast_stack
                 Stack_push(ast_stack, nodes);
             } else {
                 // TODO(Ljr): failure recorvery
-                error(word);
-                return NULL;
+                // error(word);
+                // return NULL;
+                handle_panic(NONTERM_PANIC);
             }
         }
         focus = Stack_top(stack);
     }
-    sentinel("Can not reach here.");
+
 error:
     return NULL;
 }
@@ -222,4 +260,48 @@ static inline AstNode *make_node(int index) {
 
 static inline void error(Token t) {
     fprintf(stderr, "error in (line: %d, pos: %d)\n", t.line_num, t.line_pos);
+}
+
+static inline void handle_panic(PanicType type) {
+    Token cur;
+    char tmp[100];
+    int i, stack_top;
+
+    cur = word;
+    stack_top = focus;
+    PANIC = TRUE;
+
+    if (type == TERM_PANIC) {
+        // for terminal stack_top, report token missing and pop focus
+        // log_warn("handle_panic(TERM_PANIC): %s", token_type_string[stack_top]);
+        sprintf(tmp, "Missing token %s", token_type_string[stack_top]);
+        report_error(SYNTAX_ERROR, word.line_num, word.line_pos, tmp);
+        Stack_pop(stack);
+    } else {
+        // for nonterminal stack_top, report unmatched and keep scanning token
+        // until reach one in synchronized set of stack_top
+        // then pop stack
+        // log_warn("handle_panic(NONTERM_PANIC): %s", NONTERMINAL_NAME[stack_top - non_index]);
+        int flag = 0;
+        sprintf(tmp, "Failed matching %s%s", NONTERMINAL_NAME[stack_top - non_index], flag? "" : "");
+        report_error(SYNTAX_ERROR, cur.line_num, cur.line_pos, tmp);
+
+        while (word.type != T_EOF) {
+            int index = stack_top - non_index;
+            for (i = 0; SYNCHRONIZED_SET[index][i] != 0; ++i) {
+                if (word.type == SYNCHRONIZED_SET[index][i]) {
+                    // log_info("hit index: %d, num: %d", index, i);
+                    flag = 1;
+                    break;
+                }
+            }
+            if (flag) {
+                // current token may be valid to keep parsing
+                break;
+            } else {
+                word = scan_token();
+            }
+        }
+        // Stack_pop(stack);
+    }
 }

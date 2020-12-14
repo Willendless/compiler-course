@@ -85,4 +85,36 @@ struct {
 } AstNode;
 ```
 
-### 
+### 错误处理
+
+由于lexer返回的均是合法的token，因此parser主要考虑如何处理语法错误。
+
+#### panic mode算法
+
+panic mode基本思想是parser不断忽略输入中的token，直到输入中出现能够匹配同步集合的某个token。下面基于当前分析栈的栈顶token的类型分类讨论。
+
+##### 1. 栈顶是终结符号和当前token不匹配。
+
++ 输出错误信息“Missing [该终结符号]”。
++ 同时从分析栈中弹出该符号，并继续分析。
+
+##### 2. 栈顶是非终结符号A，且当前token是a。而LL_PARSE_TABLE[A][a]为空。
+
++ 对非终结符号构造同步集合(包含first(A)和follow(A))，不断忽略token，直到能够同步。
+
+#### 示例
+
++ 缺少某些必须的token，例如分号、"then"、"else"等
++ token不正确，例如`3=abc;`
++ 缺少
+
+```
+// 1.
+{
+    a = 3
+}
+// 2.
+{
+ if (a = 3) then {}
+}
+```

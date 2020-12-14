@@ -28,6 +28,7 @@ static void print_firstplus_set(void);
 static void output_table(void);
 static void output_productions(void);
 static void output_grammar_map(void);
+static void output_synchronized_set(void);
 
 // in, out
 FILE* in;
@@ -446,6 +447,7 @@ static void handle_output(void) {
     output_grammar_map();
     output_table();
     output_productions();
+    output_synchronized_set();
     fclose(out);
 }
 
@@ -515,6 +517,35 @@ static void output_productions() {
         }
     }
 
+    fprintf(out, "};\n");
+}
+
+static void output_synchronized_set(void) {
+    int i, j, k;
+
+    fprintf(out, "// synchronized set\n");
+    fprintf(out, "const int SYNCHRONIZED_SET[%d][%d] = {\n", x_end + 1, y_end + 1);
+    // fprintf(out, "{},\n");
+    // for each non-terminal
+    for (i = non_index; i <= grammar_arr->end; ++i) {
+        Set *fir = DArray_get(first, i);
+        Set *fol = DArray_get(follow, i);
+        Set_union(fir, fol);
+        int flag = 0;
+
+        fprintf(out, "{");
+        for (j = 0; j < fir->bucket_size; ++j) {
+            struct set_entry *p = fir->buckets[j];
+            if (p) {
+                for (; p; p = p->next) {
+                    // printf("   %-5s", DArray_get(grammar_arr, p->member));
+                    fprintf(out, "%s%d", flag ? " ," : "", p->member);
+                    flag = 1;
+                }
+            }
+        }
+        fprintf(out, "},\n");
+    }
     fprintf(out, "};\n");
 }
 

@@ -14,15 +14,16 @@
 
 + [ ] 缓冲区(double buffering)
 + [x] lexer
++ [x] 错误处理(直接跳过error token)
 
 ## parser
 
 + [x] LL(1) table generator
 + [x] LL parser
 + [x] syntax tree output
-+ [ ] error handling
++ [x] 错误处理(panic mode)
 
-## syntactic analysis
+## semantic analysis
 
 + [ ] 符号表
 + [ ] 语义分析
