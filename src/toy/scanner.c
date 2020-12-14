@@ -22,7 +22,7 @@ void init_scanner(const char *source) {
     scanner.start = source;
     scanner.cur = source;
     scanner.line_num = 1;
-    scanner.line_pos = 1;
+    scanner.line_pos = 0;
 }
 
 static bool is_at_end(void);
@@ -104,7 +104,7 @@ T scan_token() {
         break;
     }
 
-    advance();
+    // advance();
     return error_token("Unexpected character");
 }
 
@@ -280,9 +280,9 @@ static inline T make_token(TT token_type) {
 }
 
 static inline T error_token(const char *msg) {
-    char tmp[100];
     Token t = make_token(T_ERROR);
-    sprintf(tmp, "Illegal character \"%.*s\"", t.length, t.start);
+    char tmp[100];
+    sprintf(tmp, "%.*s", t.length, t.start);
     report_error(LEX_ERROR, t.line_num, t.line_pos, tmp);
-    return t;
+    return scan_token();
 }
