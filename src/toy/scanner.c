@@ -123,6 +123,7 @@ static inline void skip_whitespace(void) {
             scanner.start++;
             scanner.line_num++;
             advance();
+            scanner.line_pos = 0;
             break;
         default:
             return;
