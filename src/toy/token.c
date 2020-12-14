@@ -10,5 +10,5 @@ const char *token_type_string[] = {
     "GREATER", "GREATER_EQUAL",
     "BANG_EQUAL",
     "T_EOF",
-    "T_ERROR"
+    "T_EPSILON"
 };
