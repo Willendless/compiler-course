@@ -65,4 +65,8 @@ enum TokenType {
 
 ### TODO: double buffering缓冲区
 
-### TODO: 符号表的设计
+### 错误处理
+
+出现未定义字符以及不符合词法单元定义的字符，输出下列格式的信息：
+
+```Error type: lexer at Line [行号]：[说明文字]```

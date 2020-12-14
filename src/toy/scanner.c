@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <assert.h>
 #include <string.h>
-#include "../utils/debug.h"
-#include "../utils/bool.h"
+#include "utils/debug.h"
+#include "utils/bool.h"
 #include "scanner.h"
+#include "compiler.h"
 
 #define T Token
 #define TT TokenType
@@ -279,11 +280,9 @@ static inline T make_token(TT token_type) {
 }
 
 static inline T error_token(const char *msg) {
-    Token t;
-    t.type = T_ERROR;
-    t.start = msg;
-    t.length = (int)strlen(msg);
-    t.line_num = scanner.line_num;
-    t.line_pos = scanner.line_pos;
+    char tmp[100];
+    Token t = make_token(T_ERROR);
+    sprintf(tmp, "Illegal character %.*s", t.length, t.start);
+    report_error(LEX_ERROR, t.line_num, t.line_pos, tmp);
     return t;
 }
