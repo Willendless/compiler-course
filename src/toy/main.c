@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
 #include <assert.h>
 #include "compiler.h"
 
@@ -29,6 +30,9 @@ void handle_cmd(void) {
         printf("> ");
         if (fgets(line, MAX_LINE_LEN, stdin) == NULL) {
             perror("Failed to get input line.");
+            break;
+        }
+        if (!strncmp(line, "quit", 4)) {
             break;
         }
         compile(line);
