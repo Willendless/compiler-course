@@ -277,15 +277,18 @@ static inline void handle_panic(PanicType type) {
         // if stack_top is T_EOF, report token missing and keep scanning
         // if stack_top is not T_EOF, report token and pop stack
         // log_warn("handle_panic(TERM_PANIC): %s", token_type_string[stack_top]);
+        if (stack_top == T_EOF) {
+            word = scan_token();
+            return;
+        }
         sprintf(tmp, "Missing token %s", token_type_string[stack_top]);
         report_error(SYNTAX_ERROR, word.line_num, word.line_pos, tmp);
-        if (stack_top == T_EOF) word = scan_token();
-        else Stack_pop(stack);
+        Stack_pop(stack);
     } else {
         // for nonterminal stack_top, report unmatched and keep scanning token
         // until reach one in synchronized set of stack_top
         // then pop stack
-        // log_warn("handle_panic(NONTERM_PANIC): %s", NONTERMINAL_NAME[stack_top - non_index]);
+        log_warn("handle_panic(NONTERM_PANIC): %s, %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[word.type]);
         int flag = 0;
         sprintf(tmp, "Failed matching %s%s", NONTERMINAL_NAME[stack_top - non_index], flag? "" : "");
         report_error(SYNTAX_ERROR, cur.line_num, cur.line_pos, tmp);
@@ -299,7 +302,7 @@ static inline void handle_panic(PanicType type) {
                     break;
                 }
             }
-            if (flag) {
+            if (flag || word.type == T_RIGHT_BRACE || word.type == T_SEMICOLON) {
                 // current token may be valid to keep parsing
                 break;
             } else {

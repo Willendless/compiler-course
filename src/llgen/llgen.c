@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "lib/set.h"
-#include "lib/table.h"
-#include "lib/darray.h"
-#include "utils/utils.h"
+#include "../lib/set.h"
+#include "../lib/table.h"
+#include "../lib/darray.h"
+#include "../utils/utils.h"
 
 static void handle_input(void);
 static void handle_grammar(void);
@@ -17,11 +17,6 @@ static void gen_firstplus_sets(void);
 
 static Set *get_grammar_set(DArray *arr, const char *grammar);
 static void union_without_epsilon(Set *dest, Set *src);
-
-static bool cmp_str(const void *a, const void *b);
-static unsigned hash_str(const void *key);
-static bool cmp_int(const void *a, const void *b);
-static unsigned hash_int(const void *key);
 
 static void print_firstfollow_set(DArray *arr);
 static void print_firstplus_set(void);

@@ -101,6 +101,7 @@ panic mode基本思想是parser不断忽略输入中的token，直到输入中�
 ##### 2. 栈顶是非终结符号A，且当前token是a。而LL_PARSE_TABLE[A][a]为空。
 
 + 对非终结符号构造同步集合(包含first(A)和follow(A))，不断忽略token，直到能够同步。
++ 若当前lookahead token能够表示一个语句的结束，如`T_SEMICOLON`，`T_RIGHTBRACE`则pop stack，继续分析，而非忽略token。
 
 #### 示例
 
