@@ -39,14 +39,19 @@ static void analyze(AstNode *root) {
 
 static void handle_stmt(AstNode *n) {
     AstNode *child;
+    char *s;
+    Token t;
     switch (n->subtype.stmt) {
     case STMT_Assign:
         child = AstNode_get_child(n, 0);
+        t = child->attr.token;
         check(child, "Get NULL child");
         check(child->type == AST_Term
-                && child->attr.token.type == T_IDENTIFIER,
+                && t.type == T_IDENTIFIER,
                 "Unmatched child node T_IDENTIFIER");
-        Symtable_insert(child->attr.token.start);
+        s = (char *)calloc(1, t.length + 1);
+        sprintf(s, "%.*s", t.length, t.start);
+        Symtable_insert(s);
         break;
     default:
         break;
@@ -57,19 +62,24 @@ error:
 
 static void handle_expr(AstNode *n) {
     AstNode *child;
+    char s[100];
     Token t;
+
     switch (n->subtype.expr) {
     case EXPR_Simple:
         child = AstNode_get_child(n, 0);
         t = child->attr.token;
         check(child, "Get NULL child");
         if (child->type == AST_Term
-            && t.type == T_IDENTIFIER
-            && !Symtable_search(t.start)) {
-                char tmp[100];
-                sprintf(tmp, "Undefined identifier \"%.*s\"", t.length, t.start);
-                report_error(SEMANTIC_ERROR, t.line_num, t.line_pos, tmp);
-                ERROR = TRUE;
+            && t.type == T_IDENTIFIER) {
+                memset(s, 0, sizeof(s));
+                sprintf(s, "%.*s", t.length, t.start);
+                if (!Symtable_search(s)) {
+                    char tmp[100];
+                    sprintf(tmp, "Undefined identifier \"%.*s\"", t.length, t.start);
+                    report_error(SEMANTIC_ERROR, t.line_num, t.line_pos, tmp);
+                    ERROR = TRUE;
+                }
         }
     default:
         break;
