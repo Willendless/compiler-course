@@ -25,8 +25,8 @@
 
 ## semantic analysis
 
-+ [ ] 符号表
-+ [ ] 语义分析
++ [x] 符号表
++ [x] 语义分析
 
 ## code generation
 
