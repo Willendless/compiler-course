@@ -1,9 +1,10 @@
 #include <stdio.h>
 #include <string.h>
 #include <stdlib.h>
-#include "../lib/set.h"
-#include "../lib/table.h"
-#include "../lib/darray.h"
+#include "lib/set.h"
+#include "lib/table.h"
+#include "lib/darray.h"
+#include "utils/utils.h"
 
 static void handle_input(void);
 static void handle_grammar(void);
@@ -74,9 +75,9 @@ void release(void) {
     for (i = 0; i <= production_arr->end; ++i) {
         DArray_clear_destroy(DArray_get(production_arr, i));
     }
-    Set_clear_destroy(first);
-    Set_clear_destroy(follow);
-    Set_clear_destroy(firstplus);
+    Set_destroy(first);
+    Set_destroy(follow);
+    Set_destroy(firstplus);
 }
 
 void run(FILE *_in, FILE *_out) {
@@ -86,7 +87,7 @@ void run(FILE *_in, FILE *_out) {
     handle_input(); // parse input file
     gen_table(); // table generation
     handle_output(); // generate output file
-    release(); // release memory
+    // release(); // release memory
 }
 
 void gen_table(void) {
@@ -547,28 +548,4 @@ static void output_synchronized_set(void) {
         fprintf(out, "},\n");
     }
     fprintf(out, "};\n");
-}
-
-
-static bool cmp_str(const void *a, const void *b) {
-    return !strcmp(a, b) ? TRUE : FALSE;
-}
-
-static unsigned hash_str(const void *key) {
-    unsigned hash = 2166136261u;
-    char *p = key;
-
-    for (; *p != '\0'; p++) {
-        hash ^= *p;
-        hash *= 16777619;
-    }
-    return hash;
-}
-
-static bool cmp_int(const void *a, const void *b) {
-    return a == b;
-}
-
-static unsigned hash_int(const void *key) {
-    return (unsigned long)key >> 2;
 }
