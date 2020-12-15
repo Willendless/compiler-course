@@ -3,6 +3,6 @@
 
 #include "ast.h"
 
-AstNode* parse(void);
+AstNode* parse(const char *);
 
 #endif

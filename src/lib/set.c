@@ -38,7 +38,7 @@ void Set_print(T *s) {
     for (i = 0; i < s->bucket_size; ++i) {
         if (s->buckets[i] == NULL) continue;
         for (p = s->buckets[i]; p; p = p->next) {
-            printf("%d ", p->member);
+            printf("%lld ", (long long)(p->member));
         }
         printf("\n");
     }
@@ -59,6 +59,9 @@ void Set_clear(T *s) {
         }
         s->buckets[i] = NULL;
     } 
+    check(!s->cnt, "Failed to clear set elements");
+error:
+    return;
 }
 
 void Set_destroy(T *s) {

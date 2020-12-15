@@ -44,6 +44,7 @@ typedef struct {
 } AstNode;
 
 AstNode *AstNode_init(NodeType type, NonterminalType subtype, Token token, char *s);
+AstNode *AstNode_get_child(AstNode* n, int k);
 void AstNode_print(AstNode *root, int level);
 
 #endif

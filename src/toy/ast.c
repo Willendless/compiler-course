@@ -44,6 +44,15 @@ void AstNode_clear(T *root) {
 
 }
 
+// get kth child of node n
+AstNode *AstNode_get_child(AstNode* n, int k) {
+    check(n != NULL, "Node should not be null");
+    check(n->ptrs->end >= k, "index beyond child num");
+    return DArray_get(n->ptrs, k);
+error:
+    return NULL;
+}
+
 // naive implementation of printing ast tree
 void AstNode_print(AstNode *root, int level) {
     int i;

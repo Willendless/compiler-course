@@ -2,7 +2,7 @@ CFLAGS=-g -Wall -Wextra -Isrc -rdynamic $(OPTFLAGS)
 LIBS=$(OPTLIBS) -ldl
 PREFIX?=/usr/local
 
-SOURCES=$(wildcard src/toy/**/*.c src/toy/*.c src/lib/*.c)
+SOURCES=$(wildcard src/toy/**/*.c src/toy/*.c src/lib/*.c src/utils/*.c)
 OBJECTS=$(patsubst %.c,%.o,$(SOURCES))
 DEST_OBJ=$(patsubst src/%,build/src/%,$(patsubst %.c,%.o,$(SOURCES)))
 
@@ -37,6 +37,7 @@ $(TEST_TARGET): $(DEST_OBJ)
 build:
 	@mkdir -p build/src/toy
 	@mkdir -p build/src/lib
+	@mkdir -p build/src/utils
 	@mkdir -p build/tests
 	@mkdir -p build/tests/toy
 	@mkdir -p build/tests/lib

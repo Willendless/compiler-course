@@ -47,7 +47,7 @@ static TT get_identifier_type(void);
 static void comment(void);
 
 static T make_token(TT);
-static T error_token(const char *);
+static T error_token();
 
 /**
  * Return a token each time being called or an error token with message.
@@ -105,7 +105,7 @@ T scan_token() {
     }
 
     // advance();
-    return error_token("Unexpected character");
+    return error_token();
 }
 
 static inline void skip_whitespace(void) {
@@ -280,7 +280,7 @@ static inline T make_token(TT token_type) {
     return t;
 }
 
-static inline T error_token(const char *msg) {
+static inline T error_token() {
     Token t = make_token(T_ERROR);
     char tmp[100];
     sprintf(tmp, "Invalid token \"%.*s\"", t.length, t.start);

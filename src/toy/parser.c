@@ -48,7 +48,7 @@ const int LL_PARSE_TABLE[14][29] = {
 // begin index of nonterminal
 const int non_index = 29;
 // production table
-const int productions[28][8] = {
+const int productions[29][8] = {
     {},
     {31}, 
     {33}, {34}, {35},{31}, 
@@ -100,8 +100,11 @@ T word;
 void *focus;
 Stack *stack;
 
-AstNode *parse(void) {
+AstNode *parse(const char *source) {
     int i;
+
+    // init lexer
+    init_scanner(source);
 
     PANIC = FALSE;
     stack = Stack_init();
@@ -223,8 +226,6 @@ AstNode *parse(void) {
                 Stack_push(ast_stack, nodes);
             } else {
                 // TODO(Ljr): failure recorvery
-                // error(word);
-                // return NULL;
                 handle_panic(NONTERM_PANIC);
             }
         }
@@ -268,15 +269,18 @@ static inline void handle_panic(PanicType type) {
     int i, stack_top;
 
     cur = word;
-    stack_top = focus;
+    stack_top = (int)focus;
     PANIC = TRUE;
 
     if (type == TERM_PANIC) {
-        // for terminal stack_top, report token missing and pop focus
+        // for terminal stack_top
+        // if stack_top is T_EOF, report token missing and keep scanning
+        // if stack_top is not T_EOF, report token and pop stack
         // log_warn("handle_panic(TERM_PANIC): %s", token_type_string[stack_top]);
         sprintf(tmp, "Missing token %s", token_type_string[stack_top]);
         report_error(SYNTAX_ERROR, word.line_num, word.line_pos, tmp);
-        Stack_pop(stack);
+        if (stack_top == T_EOF) word = scan_token();
+        else Stack_pop(stack);
     } else {
         // for nonterminal stack_top, report unmatched and keep scanning token
         // until reach one in synchronized set of stack_top

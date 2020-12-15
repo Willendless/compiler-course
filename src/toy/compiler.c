@@ -5,13 +5,13 @@
 #include "parser.h"
 #include "utils/bool.h"
 #include "ast.h"
+#include "semantic_analysis.h"
 
 #define T Token
 
 void compile(const char *source) {
-    int line = 0;
+    AstNode *root;
 
-    init_scanner(source);
     // while (TRUE) {
     //     T token = scan_token();
     //     if (line != token.line_num) {
@@ -28,6 +28,10 @@ void compile(const char *source) {
     //     // TODO(ljr): rm
     //     // break;
     // }
-    AstNode_print(parse(), 1);
-
+    root = parse(source);
+    AstNode_print(root, 1);
+    if (root != NULL && !semantic_analysis(root)) {
+        // code gen
+        // vm run
+    }
 }
