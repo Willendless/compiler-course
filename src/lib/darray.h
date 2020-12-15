@@ -73,4 +73,5 @@ error:
 }
 
 #define DArray_free(E) free((E))
+#undef T
 #endif
