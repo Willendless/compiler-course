@@ -30,7 +30,7 @@
 
 ## code generation
 
-+ [ ] parser tree -> ast tree
++ [x] parser tree -> ast tree
 + [ ] ast tree -> 三地址码生成
 
 ## virtual machine
@@ -47,9 +47,7 @@
 
 - [x] c单元测试
 - [ ] qt可视化显示，[UI参考1](https://mashplant.online/minidecaf-frontend/), [UI参考2](https://github.com/yunwei37/MIPS-sc-zju)
-- [ ] scanner generator
-- [ ] LL(1) parser generator
-- [ ] LR(1) parser generator
+- [ ] IR代码优化
 
 ## 额外的支持
 
