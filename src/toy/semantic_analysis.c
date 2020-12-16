@@ -74,7 +74,7 @@ static void handle_expr(AstNode *n) {
             && t.type == T_IDENTIFIER) {
                 memset(s, 0, sizeof(s));
                 sprintf(s, "%.*s", t.length, t.start);
-                if (!Symtable_search(s)) {
+                if (!Symtable_lookup(s)) {
                     char tmp[100];
                     sprintf(tmp, "Undefined identifier \"%.*s\"", t.length, t.start);
                     report_error(SEMANTIC_ERROR, t.line_num, t.line_pos, tmp);

@@ -10,7 +10,8 @@
 #define T Token
 
 void compile(const char *source) {
-    AstNode *root;
+    AstNode *parse_tree;
+    AstNode *ast_tree;
 
     // while (TRUE) {
     //     T token = scan_token();
@@ -28,10 +29,12 @@ void compile(const char *source) {
     //     // TODO(ljr): rm
     //     // break;
     // }
-    root = parse(source);
-    AstNode_print(root, 1);
-    if (root != NULL && !semantic_analysis(root)) {
+    parse_tree = parse(source);
+    AstNode_print(parse_tree, 1);
+    if (parse_tree != NULL && !semantic_analysis(parse_tree)) {
         // code gen
+        ast_tree = AstNode_gen_ast(parse_tree);
+        AstNode_print(ast_tree, 1);
         // vm run
     }
 }

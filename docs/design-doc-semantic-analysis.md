@@ -8,7 +8,15 @@
 
 ## 数据结构
 
-因为变量不存在类型，因此考虑只是用hashset记录已经定义的变量信息。
+### 符号表
+
+考虑使用hashtable记录已经定义的变量信息。
+
+```c
+typedef struct {
+    
+} SymtableEntry;
+```
 
 ## 算法
 

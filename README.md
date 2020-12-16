@@ -30,8 +30,8 @@
 
 ## code generation
 
-+ [ ] 三地址码生成
-+ [ ] 代码优化
++ [ ] parser tree -> ast tree
++ [ ] ast tree -> 三地址码生成
 
 ## virtual machine
 

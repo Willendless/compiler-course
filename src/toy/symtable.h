@@ -3,9 +3,13 @@
 
 #include "utils/bool.h"
 
+typedef struct {
+
+} SymtableEntry;
+
 void Symtable_init(int);
 void Symtable_destroy(void);
-void Symtable_insert(const void *);
-bool Symtable_search(const void *);
+void Symtable_insert(const char *);
+bool Symtable_lookup(const char *);
 
 #endif
