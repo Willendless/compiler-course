@@ -31,7 +31,7 @@
 ## code generation
 
 + [x] parser tree -> ast tree
-+ [ ] ast tree -> 三地址码生成
++ [x] ast tree -> 三地址码生成
 
 ## virtual machine
 
