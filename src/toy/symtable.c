@@ -29,12 +29,12 @@ void Symtable_destroy() {
 
 void Symtable_insert(const char *en) {
     assert(symtable != NULL && "Try to insert into NULL symbol table");
-    log_info("Insert into symtable: %s", en);
+    // log_info("Insert into symtable: %s", en);
     Set_put(symtable, en);
 }
 
 bool Symtable_lookup(const char *en) {
     assert(symtable != NULL && "Try to search from NULL symbol table");
-    log_info("search symtable: %s", en);
+    // log_info("search symtable: %s", en);
     return Set_member(symtable, en);
 }

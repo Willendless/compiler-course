@@ -6,6 +6,7 @@
 #include "utils/bool.h"
 #include "ast.h"
 #include "semantic_analysis.h"
+#include "code_gen.h"
 
 #define T Token
 
@@ -35,6 +36,8 @@ void compile(const char *source) {
         // code gen
         ast_tree = AstNode_gen_ast(parse_tree);
         AstNode_print(ast_tree, 1);
+        printf("---------code generation-------\n");
+        code_generation(ast_tree);
         // vm run
     }
 }
