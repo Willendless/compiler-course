@@ -10,8 +10,6 @@
 
 ## 数据结构
 
-### AST节点表示
-
 ### 三地址码表示
 
 使用四元式来表示三地址码如下：
@@ -97,7 +95,8 @@ simpleexpr -> ID | NUM | ( arithexpr ) $
   + 若右子树非空，则以右子树根为根
 + 对于arithexprime和multexprprime
   + 以第一个子节点为根
-  + 如果arithexprprime非epsilon，则arithexprprime的第一个节点作为右子树根，返回值作为右子树的右节点，multexpr作为左节点
+  + 如果arithexprprime非epsilon，则arithexprprime的返回值作为右子树，multexpr作为右子树的左节点
+  + 如果arithexprprime为epsilon，则multexpr返回值作为右子树
 + 对于simpleexpr
   + 若为叶子，返回相同节点
   + 若为( arithexpr ), 返回arithexpr
@@ -105,6 +104,20 @@ simpleexpr -> ID | NUM | ( arithexpr ) $
 ### ast树 -> 三地址码
 
 自顶向下遍历时翻译生成，同时传入上层提供的变量名。
+
+ast树有以下类型节点：
+
+non-terminal类型：
+
++ stmts
++ ifstmt
++ whilestmt
++ assgnstmt
+
+terminal类型：
+
++ operator 操作符，可分为二元操作符和bool操作符两类
++ operand: 根据token类型可分为T_INDENTIFIER和T_NUMBER两类
 
 #### 语句的翻译
 

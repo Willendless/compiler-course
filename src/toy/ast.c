@@ -113,7 +113,7 @@ static T *gen_ast(T *root) {
         case T_ERROR:
             return NULL;
         default:
-            log_info("Gen terminal: %s", token_type_string[root->attr.token.type]);
+            // log_info("Gen terminal: %s", token_type_string[root->attr.token.type]);
             return replicate_node(root);
         }
     }
@@ -179,7 +179,7 @@ error:
 
 // assgstmt -> ID = arithexpr;
 static T *handle_assign(T *root) {
-    log_info("Gen terminal: %s", NONTERMINAL_NAME[root->attr.token.type]);
+    // log_info("Gen terminal: %s", NONTERMINAL_NAME[root->attr.token.type]);
     check(root->ptrs->end == 3, "Failed to get assign stmt, child num: %d instead of 3", root->ptrs->end + 1);
     T *n = replicate_node(root);
     T *id = replicate_node(DArray_get(root->ptrs, 0));
@@ -256,9 +256,8 @@ error:
 // arithexprprime -> + multexpr arithexprprime | - multexpr arithexprprime | epsilon
 // multexprprime -> * simpleexpr multexprprime | / simpleexpr multexprprime | epsilon
 // 以第一个子节点为根，
-// 1. 若第3个子节点非epsilon, 则以第三个子节点的第一个儿子为右子树的根，返回值作为右节点
-// multexpr作为左节点
-// 2. 若第三个子节点为epsilon, 则以multexpr作为右节点
+// 1. 若第3个子节点非epsilon, 则以第二个节点返回值作为右子树
+// 2. 若第三个子节点非epsilon, 则以第三个节点返回值作为右子树，第二个节点返回值作为右子树的左子树
 // 返回一个左子树缺少，右子树完整的根
 static T *handle_prime(T *root) {
     T *ret;
@@ -272,14 +271,11 @@ static T *handle_prime(T *root) {
     second = gen_ast(DArray_get(root->ptrs, 1));
     third = gen_ast(DArray_get(root->ptrs, 2));
     // if the third child is not epsilon, then
-    // the root of the right subtree should be the operator of the third child
-    // other wise the right subtree should be the return value of the second child
+    // use it as the right hand side subtree, use the second as its left hand side subtree
+    // otherwise use second as the right hand side subtree
     if (third != NULL) {
-        // not epsilon
-        T *right = replicate_node(DArray_get(((T *)DArray_get(root->ptrs, 2))->ptrs, 0));
-        DArray_push(right->ptrs, second);
-        DArray_push(right->ptrs, third);
-        DArray_set(ret->ptrs, 1, right);
+        DArray_set(third->ptrs, 0, second);
+        DArray_set(ret->ptrs, 1, third);
     } else {
         // epsilon
         DArray_set(ret->ptrs, 1, second);
