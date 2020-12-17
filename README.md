@@ -35,7 +35,6 @@
 
 ## virtual machine
 
-+ [ ] bytecode生成
 + [ ] 虚拟机实现
 
 ## visualization
@@ -48,12 +47,6 @@
 - [x] c单元测试
 - [ ] qt可视化显示，[UI参考1](https://mashplant.online/minidecaf-frontend/), [UI参考2](https://github.com/yunwei37/MIPS-sc-zju)
 - [ ] IR代码优化
-
-## 额外的支持
-
-- [ ] 编程语言其它支持：for，布尔类型，内置的字符串的支持、内置语句(例如：print)
-- [ ] 函数
-- [ ] OOP特性
 
 ## reference
 
