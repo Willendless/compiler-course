@@ -141,6 +141,7 @@ void vm_run(DArray *code) {
             case OP_GREATE_E: goto_label = (long)get_operand_value(c->arg1) >= (long)get_operand_value(c->arg2); break;
             case OP_LESS: goto_label = (long)get_operand_value(c->arg1) < (long)get_operand_value(c->arg2); break;
             case OP_LESS_E: goto_label = (long)get_operand_value(c->arg1) <= (long)get_operand_value(c->arg2); break;
+            case OP_EQUAL: goto_label = (long)get_operand_value(c->arg1) == (long)get_operand_value(c->arg2); break;
             default: break; // OP_LABEL
             }
             if (goto_label) exe_goto(c); else vm.pc++;
