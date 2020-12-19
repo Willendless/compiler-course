@@ -13,7 +13,7 @@
 ## scanner
 
 + [ ] 缓冲区(double buffering)
-+ [x] lexer
++ [x] lexer(scanning on demand)
 + [x] 错误处理(直接跳过error token)
 
 ## parser
@@ -35,7 +35,7 @@
 
 ## virtual machine
 
-+ [ ] 虚拟机实现
++ [x] 虚拟机实现
 
 ## visualization
 
