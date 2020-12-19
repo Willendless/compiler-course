@@ -31,6 +31,7 @@ static bool match(char);
 static char peek(void);
 static char next(void);
 static char next_next(void);
+static char next_next_next();
 static bool is_digit(char);
 static void skip_whitespace();
 
@@ -44,7 +45,7 @@ static bool is_alpha(char);
 static T identifier(void);
 static TT get_identifier_type(void);
 
-static void comment(void);
+static char comment(void);
 
 static T make_token(TT);
 static T error_token();
@@ -61,40 +62,50 @@ T scan_token() {
     }
 
     skip_whitespace();
+    if (is_at_end()) {
+        // eof after whitespace
+        return make_token(T_EOF);
+    }
 
-    ch = advance();
+    // ch = advance();
+    ch = peek();
 
     // comment
-    if (ch == '/' && peek() == '/') {
-        comment();
-    }
-    // eof
-    if (is_at_end()) {
-        return make_token(T_EOF);
+    while (ch == '/' && next() == '/') {
+        ch = comment();
+        if (is_at_end()) {
+            // eof after comment
+            return make_token(T_EOF);
+        }
+        skip_whitespace();
+        ch = peek();
+        if (is_at_end()) {
+            // eof after whitespace
+            return make_token(T_EOF);
+        }
     }
     // number
     if (is_digit(ch)) {
         return number();
     }
     // identifier
-
     if (is_alpha(ch)) {
         return identifier();
     }
 
     switch (ch) {
     // delimiters
-    case '(': return make_token(T_LEFT_PAREN);
-    case ')': return make_token(T_RIGHT_PAREN);
-    case '{': return make_token(T_LEFT_BRACE);
-    case '}': return make_token(T_RIGHT_BRACE);
-    case ',': return make_token(T_COMMA);
-    case ';': return make_token(T_SEMICOLON);
+    case '(': advance(); return make_token(T_LEFT_PAREN);
+    case ')': advance(); return make_token(T_RIGHT_PAREN);
+    case '{': advance(); return make_token(T_LEFT_BRACE);
+    case '}': advance(); return make_token(T_RIGHT_BRACE);
+    case ',': advance(); return make_token(T_COMMA);
+    case ';': advance(); return make_token(T_SEMICOLON);
     // operators
-    case '+': return make_token(T_PLUS);
-    case '-': return make_token(T_MINUS);
-    case '*': return make_token(T_STAR);
-    case '/': return make_token(T_SLASH);
+    case '+': advance(); return make_token(T_PLUS);
+    case '-': advance(); return make_token(T_MINUS);
+    case '*': advance(); return make_token(T_STAR);
+    case '/': advance(); return make_token(T_SLASH);
     // one or two character tokens
     case '=': return match('=') ? make_token(T_EQUAL_EQUAL) : make_token(T_EQUAL);
     case '<': return match('=') ? make_token(T_LESS_EQUAL) : make_token(T_LESS);
@@ -155,11 +166,15 @@ static inline char next_next() {
     return *(scanner.cur + 2);
 }
 
+static inline char next_next_next() {
+    if (next_next() == '\0') return '\0';
+    return *(scanner.cur + 3);
+}
+
 static inline bool match(char m) {
     if (is_at_end()) return FALSE;
-    if (peek() != m) return FALSE;
-
     advance();
+    if (peek() != m) return FALSE;
     return TRUE;
 }
 
@@ -177,7 +192,7 @@ static inline bool is_alpha(char ch) {
  *            | digit+ fraction (exponent | nil)
  */
 static inline T number(void) {
-    assert(is_digit(scanner.cur[-1]));
+    assert(is_digit(peek()));
     
     // digit part
     while (is_digit(peek())) {
@@ -219,15 +234,15 @@ static inline void fraction(void) {
 static inline void exponent(void) {
     assert(peek() == 'E' || peek() == 'e');
     advance();
-    match('+');
-    match('-');
+    assert(peek() == '+' || peek() == '-');
+    advance();
     while (is_digit(peek())) {
         advance();
     }
 }
 
 static inline T identifier(void) {
-    assert(is_alpha(scanner.cur[-1]));
+    assert(is_alpha(peek()));
     while (is_digit(peek()) || is_alpha(peek())) advance();
     return make_token(get_identifier_type());
 }
@@ -263,11 +278,23 @@ static TT check_keyword(int l, int r, const char *s, TT type) {
     return T_IDENTIFIER;
 }
 
-static inline void comment(void) {
+// ignore comment excluding last \n or eof
+static inline char comment(void) {
+    // current is the first '/'
     assert(peek() == '/');
-    while (!is_at_end() && advance() != '\n') ;
-    scanner.line_num++;
-    scanner.line_pos = 1;
+    assert(next() == '/');
+    // invariant: cur not \n and not end
+    while (peek() != '\n' && !is_at_end()) {
+        advance();
+    }
+    // cur is \n or end
+    scanner.start = scanner.cur;
+    if (peek() == '\n') {
+        scanner.line_num++;
+        scanner.line_pos = 0;
+        return peek();
+    }
+    return peek();
 }
 
 static inline T make_token(TT token_type) {
@@ -283,7 +310,7 @@ static inline T make_token(TT token_type) {
 static inline T error_token() {
     Token t = make_token(T_ERROR);
     char tmp[100];
-    sprintf(tmp, "Invalid token \"%.*s\"", t.length, t.start);
+    sprintf(tmp, "Invalid token \"%.*s\", len: %d, ch: %d", t.length, t.start, t.length, *t.start);
     report_error(LEX_ERROR, t.line_num, t.line_pos, tmp);
     return scan_token();
 }
