@@ -44,7 +44,7 @@ error:
 
 static inline void DArray_set(T *arr, int i, void *e) {
     assert(arr != NULL && "DArray pointer should not be null.");
-    check(i < arr->max, "darry attempt to set beyond max.");
+    check(i < arr->max, "darry attempt to set beyond max. max: %d\n", arr->max);
     if (i > arr->end)
         arr->end = i;
     arr->contents[i] = e;

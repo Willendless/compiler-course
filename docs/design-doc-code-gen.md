@@ -1,4 +1,4 @@
-# design doc 4: code generation
+# design doc 4: ir code generation
 
 本文档主要介绍toy语言代码（三地址码）生成的实现。
 
@@ -17,20 +17,25 @@
 ```c
 #define MAX_LINE 1024
 
+typedef enum {
+    OPERAND_VAR, OPERAND_CONST,
+    OPERAND_TEMP, OPERAND_LABEL
+} OperandKind;
+
 typedef struct {
     enum { VARIABLE, CONSTANT } kind;
     union {
-        SymtableEntry *symbol; // 表示源程序中的变量在符号表中的指针
-        double value; // 表示字面量常量
+        Token token;
         int tempvar_index; // 表示中间变量索引
+        int label_index; // 表示label索引
     } u;
 } *Operand;
 
 typedef struct {
     enum { ADD, SUB, MUL, DIV, ASSIGN, EQUAL, LESS, LESS_E, GREATE, GREATE_E } op;
-    Operand arg1;
-    Operand arg2;
-    Operand result;
+    Operand *arg1;
+    Operand *arg2;
+    Operand *result;
 } InterCode;
 
 InterCode *codes[MAX_LINE];

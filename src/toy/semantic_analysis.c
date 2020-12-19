@@ -16,7 +16,7 @@ bool semantic_analysis(AstNode *root) {
     ERROR = FALSE;
     Symtable_init(500);
     analyze(root);
-    Symtable_destroy();
+    // Symtable_destroy();
     return ERROR;
 }
 
@@ -49,9 +49,14 @@ static void handle_stmt(AstNode *n) {
         check(child->type == AST_Term
                 && t.type == T_IDENTIFIER,
                 "Unmatched child node T_IDENTIFIER");
-        s = (char *)calloc(1, t.length + 1);
+        s = calloc(1, t.length + 1);
+        // cannot free s, since s should be stored in the table as key
         sprintf(s, "%.*s", t.length, t.start);
-        Symtable_insert(s);
+        if (Symtable_exist(s) == FALSE) {
+            SymtableEntry *en = (SymtableEntry *)calloc(1, sizeof(SymtableEntry));
+            en->n = Symtable_length() + 1;
+            Symtable_insert(s, en);
+        }
         break;
     default:
         break;
@@ -74,7 +79,7 @@ static void handle_expr(AstNode *n) {
             && t.type == T_IDENTIFIER) {
                 memset(s, 0, sizeof(s));
                 sprintf(s, "%.*s", t.length, t.start);
-                if (!Symtable_lookup(s)) {
+                if (!Symtable_exist(s)) {
                     char tmp[100];
                     sprintf(tmp, "Undefined identifier \"%.*s\"", t.length, t.start);
                     report_error(SEMANTIC_ERROR, t.line_num, t.line_pos, tmp);

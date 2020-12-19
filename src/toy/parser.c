@@ -288,9 +288,9 @@ static inline void handle_panic(PanicType type) {
         // for nonterminal stack_top, report unmatched and keep scanning token
         // until reach one in synchronized set of stack_top
         // then pop stack
-        // log_warn("handle_panic(NONTERM_PANIC): %s, %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[word.type]);
+        log_warn("handle_panic(NONTERM_PANIC): %s, %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[word.type]);
         int flag = 0;
-        sprintf(tmp, "Failed matching %s%s", NONTERMINAL_NAME[stack_top - non_index], flag? "" : "");
+        sprintf(tmp, "Failed matching %s, with %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[(int)focus]);
         report_error(SYNTAX_ERROR, cur.line_num, cur.line_pos, tmp);
 
         while (word.type != T_EOF) {

@@ -24,6 +24,26 @@ char *test_number() {
     t = scan_token();
     mu_assert(t.length == 7, "Failed to scan token length");
     mu_assert(t.type == T_NUMBER, "Failed to scan token type"); 
+    init_scanner(number3);
+    t = scan_token();
+    mu_assert(t.length == 7, "Failed to scan token length");
+    mu_assert(t.type == T_NUMBER, "Failed to scan token type"); 
+    init_scanner(number4);
+    t = scan_token();
+    mu_assert(t.length == 6, "Failed to scan token length");
+    mu_assert(t.type == T_NUMBER, "Failed to scan token type"); 
+    init_scanner(number5);
+    t = scan_token();
+    mu_assert(t.length == 9, "Failed to scan token length");
+    mu_assert(t.type == T_NUMBER, "Failed to scan token type"); 
+    init_scanner(number6);
+    t = scan_token();
+    mu_assert(t.length == 9, "Failed to scan token length");
+    mu_assert(t.type == T_NUMBER, "Failed to scan token type"); 
+    init_scanner(number7);
+    t = scan_token();
+    mu_assert(t.length == 9, "Failed to scan token length");
+    mu_assert(t.type == T_NUMBER, "Failed to scan token type"); 
     return NULL;
 }
 

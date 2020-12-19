@@ -2,7 +2,9 @@
 #include "bool.h"
 
 bool cmp_str(const void *a, const void *b) {
-    return !strcmp(a, b) ? TRUE : FALSE;
+    const char *_a = a;
+    const char *_b = b;
+    return !strcmp(_a, _b) ? TRUE : FALSE;
 }
 
 unsigned hash_str(const void *key) {

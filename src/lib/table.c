@@ -24,7 +24,7 @@ T *Table_init(int hint,
     int i;
 
     for (i = 1; primes[i] < hint; i++) ;
-    table = (T *)calloc(1, sizeof(T) + primes[i-1] * sizeof(*(table->buckets)));
+    table = (T *)calloc(1, sizeof(T) + primes[i-1] * sizeof(struct entry *));
     check_mem(table);
     table->bucket_size = primes[i-1];
     table->cnt = 0;
@@ -67,9 +67,9 @@ void Table_map(T *table,
     assert(table != NULL && "Table should not be NULL");
     assert(apply);
     stamp = table->timestamp;
-    for (i = 0; i < table->cnt; ++i) {
-        for (p = *(table->buckets) + i; p; p = p->next) {
-            apply(p->key, p->value, c1);
+    for (i = 0; i < table->bucket_size; ++i) {
+        for (p = *(table->buckets + i); p; p = p->next) {
+            apply(&(p->key), p->value, c1);
             assert(table->timestamp == stamp);
         }
     }
@@ -96,7 +96,9 @@ static inline void *search_entry(T *table, const void *key) {
 
     p = NULL;
     index = table->hash(key) % table->bucket_size;
+    // log_info("search entry with key: %s, hash val: %d", key, index);
     for (p = table->buckets[index]; p; p = p->next) {
+        // log_info("cmp %s with %s", key, p->key);
         if (table->cmp(p->key, key) == TRUE) {
             break;
         }
@@ -129,6 +131,7 @@ void *Table_put(T *table, const void *key, void *value) {
         p->value = value;
     } else {
         index = table->hash(key) % table->bucket_size;
+        // log_info("insert entry with key: %s, hash val: %d, value: %p", key, index, value);
         prev = NULL;
         en = (struct t_entry*)calloc(1, sizeof(struct t_entry));
         check_mem(en);

@@ -2,49 +2,14 @@
 #include "utils/bool.h"
 #include "utils/debug.h"
 #include <stdarg.h>
+#include "utils/utils.h"
+#include "symtable.h"
 
-#define MAX_LINE 1024
 #define T AstNode
-
-typedef enum {
-    OPERAND_VAR, OPERAND_CONST,
-    OPERAND_TEMP, OPERAND_LABEL
-} OperandKind;
-
-typedef struct {
-    OperandKind kind;
-    union {
-        // SymtableEntry *symbol; // 表示源程序中的变量在符号表中的指针
-        // double value; // 表示字面量常量
-        int tempvar_index; // 表示中间变量索引
-        int label_index; // 表示label的索引
-        Token token;
-    } attr;
-} Operand;
-
-typedef enum {
-    OP_ADD, OP_SUB, OP_MUL, OP_DIV,
-    OP_ASSIGN, OP_EQUAL, OP_LESS,
-    OP_LESS_E, OP_GREATE, OP_GREATE_E, OP_GOTO, OP_LABEL,
-    OP_ERROR
-} InterCodeOp;
-
-struct _InterCode {
-    InterCodeOp  op;
-    Operand *arg1;
-    Operand *arg2;
-    Operand *result;
-    struct _InterCode *next;
-    struct _InterCode *prev;
-};
-
-typedef struct _InterCode InterCode;
-
-InterCode codes[MAX_LINE];
-int cnt;
 
 int tempvar_index;
 int label_index;
+int var_index;
 
 typedef int TempVar;
 typedef int Label;
@@ -94,16 +59,20 @@ static void print_ir_binop(InterCode *);
 static void print_ir_cond(InterCode *);
 static inline void get_name_from_operand(char *name, Operand *operand);
 
+DArray *code;
 
-void code_generation(AstNode *root) {
+DArray *code_generation(AstNode *root) {
     InterCode *ir;
     check(root != NULL, "Fail to generate code for null ast tree.");
+    code = DArray_init(sizeof(InterCode), 10);
     tempvar_index = 1;
     label_index = 1;
+    var_index = 1;
     ir = translate_stmt(root);
     print_ir(ir);
+    return code;
 error:
-    return;
+    return NULL;
 }
 
 static InterCode *translate_stmt(T *root) {
@@ -294,8 +263,14 @@ static Operand *make_operand(OperandKind kind, void *attr) {
         operand->attr.tempvar_index = (int)attr;
     } else if (kind == OPERAND_LABEL) {
         operand->attr.label_index = (int)attr;
-    } else {
-        operand->attr.token = *(Token *)attr;
+    } else if (kind == OPERAND_CONST) {
+        operand->attr.var_index.token = *(Token *)attr;
+    } else {    
+        char s[100];
+        Token t = *(Token *)attr;
+        sprintf(s, "%.*s", t.length, t.start);
+        operand->attr.var_index.index = Symtable_lookup(s)->n;
+        operand->attr.var_index.token = t;
     }
     return operand;
 }
@@ -371,6 +346,8 @@ static void print_ir(InterCode *c) {
 
     do {
         print_ir_kind(p);
+        // push each ir into code
+        DArray_push(code, p);
         p = p->next;
     } while (p != c);
 }
@@ -421,7 +398,7 @@ static inline void get_name_from_operand(char *name, Operand *operand) {
     if (operand->kind == OPERAND_TEMP) {
         sprintf(name, "t%d", operand->attr.tempvar_index);
     } else if (operand->kind == OPERAND_VAR || operand->kind == OPERAND_CONST) {
-        Token t = operand->attr.token;
+        Token t = operand->attr.var_index.token;
         sprintf(name, "%.*s", t.length, t.start);
     }
 }
