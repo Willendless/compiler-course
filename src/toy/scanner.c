@@ -173,8 +173,11 @@ static inline char next_next_next() {
 
 static inline bool match(char m) {
     if (is_at_end()) return FALSE;
+    // not match then advance once
     advance();
     if (peek() != m) return FALSE;
+    // match then advance twice
+    advance();
     return TRUE;
 }
 
@@ -308,7 +311,10 @@ static inline T make_token(TT token_type) {
 }
 
 static inline T error_token() {
-    Token t = make_token(T_ERROR);
+    Token t;
+    // first proceed to next pos
+    advance();
+    t = make_token(T_ERROR);
     char tmp[100];
     sprintf(tmp, "Invalid token \"%.*s\", len: %d, ch: %d", t.length, t.start, t.length, *t.start);
     report_error(LEX_ERROR, t.line_num, t.line_pos, tmp);
