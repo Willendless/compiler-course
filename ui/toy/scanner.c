@@ -50,6 +50,8 @@ static char comment(void);
 static T make_token(TT);
 static T error_token();
 
+extern char compile_output[2048];
+
 /**
  * Return a token each time being called or an error token with message.
  */
@@ -317,6 +319,6 @@ static inline T error_token() {
     t = make_token(T_ERROR);
     char tmp[100];
     sprintf(tmp, "Invalid token \"%.*s\", len: %d, ch: %d", t.length, t.start, t.length, *t.start);
-    report_error(LEX_ERROR, t.line_num, t.line_pos, tmp);
+    report_error(compile_output, LEX_ERROR, t.line_num, t.line_pos, tmp);
     return scan_token();
 }

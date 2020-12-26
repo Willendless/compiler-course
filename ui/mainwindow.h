@@ -24,13 +24,13 @@ private slots:
     void on_actionnew_triggered();
     void on_actionexit_triggered();
     //menu-build
-    //void on_actioncompile_triggered();
+    void on_actioncompile_triggered();
     //menu-help
     void on_actionabout_triggered();
     void on_actiondocument_triggered();
 
     //Tab1-Button
-    //void on_compileButton_clicked();
+    void on_compileButton_clicked();
 
 
 private:

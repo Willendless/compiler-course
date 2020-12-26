@@ -94,6 +94,7 @@ static inline void handle_panic(PanicType type);
 
 const Token empty = {};
 const Token token_epsilon = {"epsilon", 8};
+extern char compile_output[2048];
 
 bool PANIC;
 T word;
@@ -282,7 +283,7 @@ static inline void handle_panic(PanicType type) {
             return;
         }
         sprintf(tmp, "Missing token %s", token_type_string[stack_top]);
-        report_error(SYNTAX_ERROR, word.line_num, word.line_pos, tmp);
+        report_error(compile_output, SYNTAX_ERROR, word.line_num, word.line_pos, tmp);
         Stack_pop(stack);
     } else {
         // for nonterminal stack_top, report unmatched and keep scanning token
@@ -291,7 +292,7 @@ static inline void handle_panic(PanicType type) {
         log_warn("handle_panic(NONTERM_PANIC): %s, %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[word.type]);
         int flag = 0;
         sprintf(tmp, "Failed matching %s, with %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[(int)focus]);
-        report_error(SYNTAX_ERROR, cur.line_num, cur.line_pos, tmp);
+        report_error(compile_output, SYNTAX_ERROR, cur.line_num, cur.line_pos, tmp);
 
         while (word.type != T_EOF) {
             int index = stack_top - non_index;

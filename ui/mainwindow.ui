@@ -14,8 +14,8 @@
    <string>MainWindow</string>
   </property>
   <widget class="QWidget" name="centralWidget">
-   <layout class="QHBoxLayout" name="horizontalLayout_2">
-    <item>
+   <layout class="QGridLayout" name="gridLayout">
+    <item row="0" column="0">
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
        <widget class="QTabWidget" name="tabWidget">
@@ -27,7 +27,7 @@
         </property>
         <widget class="QWidget" name="widget">
          <attribute name="title">
-          <string>Tab 1</string>
+          <string>编辑</string>
          </attribute>
          <widget class="QWidget" name="verticalLayoutWidget">
           <property name="geometry">
@@ -41,17 +41,20 @@
           <layout class="QVBoxLayout" name="editTab">
            <item>
             <widget class="QTextEdit" name="codeEdit">
+             <property name="cursor" stdset="0">
+              <cursorShape>IBeamCursor</cursorShape>
+             </property>
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 0, 0);
-color: rgb(255, 255, 255);
-font: 9pt &quot;Arial&quot;;</string>
+              <string notr="true">font: 13pt &quot;Consolas&quot;;
+color: black;
+background-color: rgb(128,138,135);</string>
              </property>
              <property name="html">
               <string>&lt;!DOCTYPE HTML PUBLIC &quot;-//W3C//DTD HTML 4.0//EN&quot; &quot;http://www.w3.org/TR/REC-html40/strict.dtd&quot;&gt;
 &lt;html&gt;&lt;head&gt;&lt;meta name=&quot;qrichtext&quot; content=&quot;1&quot; /&gt;&lt;style type=&quot;text/css&quot;&gt;
 p, li { white-space: pre-wrap; }
-&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Arial'; font-size:9pt; font-weight:400; font-style:normal;&quot;&gt;
-&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+&lt;/style&gt;&lt;/head&gt;&lt;body style=&quot; font-family:'Consolas'; font-size:13pt; font-weight:400; font-style:normal;&quot;&gt;
+&lt;p style=&quot;-qt-paragraph-type:empty; margin-top:0px; margin-bottom:0px; margin-left:0px; margin-right:0px; -qt-block-indent:0; text-indent:0px; font-family:'Arial'; font-size:9pt; color:#ffffff;&quot;&gt;&lt;br /&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
              </property>
             </widget>
            </item>
@@ -82,15 +85,15 @@ color: rgb(255, 255, 255);</string>
            <rect>
             <x>10</x>
             <y>570</y>
-            <width>671</width>
-            <height>21</height>
+            <width>341</width>
+            <height>41</height>
            </rect>
           </property>
           <property name="styleSheet">
            <string notr="true"/>
           </property>
           <property name="text">
-           <string>compile</string>
+           <string>编译</string>
           </property>
          </widget>
          <widget class="QLabel" name="label">
@@ -103,17 +106,51 @@ color: rgb(255, 255, 255);</string>
            </rect>
           </property>
           <property name="text">
-           <string>output</string>
+           <string>输出:</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="compileButton_2">
+          <property name="geometry">
+           <rect>
+            <x>430</x>
+            <y>570</y>
+            <width>341</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>运行</string>
+          </property>
+         </widget>
+         <widget class="QPushButton" name="compileButton_3">
+          <property name="geometry">
+           <rect>
+            <x>870</x>
+            <y>570</y>
+            <width>341</width>
+            <height>41</height>
+           </rect>
+          </property>
+          <property name="styleSheet">
+           <string notr="true"/>
+          </property>
+          <property name="text">
+           <string>重置</string>
           </property>
          </widget>
          <zorder>label</zorder>
          <zorder>verticalLayoutWidget</zorder>
          <zorder>verticalLayoutWidget_2</zorder>
          <zorder>compileButton</zorder>
+         <zorder>compileButton_2</zorder>
+         <zorder>compileButton_3</zorder>
         </widget>
         <widget class="QWidget" name="tab_2">
          <attribute name="title">
-          <string>Tab 2</string>
+          <string notr="true">中间结果</string>
          </attribute>
          <widget class="QWidget" name="verticalLayoutWidget_3">
           <property name="geometry">
@@ -143,8 +180,9 @@ color: rgb(255, 255, 255);</string>
            <item>
             <widget class="QTextBrowser" name="Tab2Output">
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 0, 0);
-color: rgb(255, 255, 255);</string>
+              <string notr="true">font: pt &quot;Consolas&quot;;
+color: rgb(255, 255, 255);
+background-color: rgb(128,138,135);</string>
              </property>
             </widget>
            </item>
@@ -160,7 +198,7 @@ color: rgb(255, 255, 255);</string>
            </rect>
           </property>
           <property name="text">
-           <string> output</string>
+           <string>抽象语法树</string>
           </property>
          </widget>
          <widget class="QWidget" name="verticalLayoutWidget_5">
@@ -176,8 +214,9 @@ color: rgb(255, 255, 255);</string>
            <item>
             <widget class="QTextBrowser" name="instruction">
              <property name="styleSheet">
-              <string notr="true">background-color: rgb(0, 0, 0);
-color: rgb(255, 255, 255);</string>
+              <string notr="true">font: pt &quot;Consolas&quot;;
+color: rgb(255, 255, 255);
+background-color: rgb(128,138,135);</string>
              </property>
             </widget>
            </item>
@@ -187,13 +226,13 @@ color: rgb(255, 255, 255);</string>
           <property name="geometry">
            <rect>
             <x>500</x>
-            <y>190</y>
-            <width>271</width>
-            <height>121</height>
+            <y>240</y>
+            <width>101</width>
+            <height>31</height>
            </rect>
           </property>
           <property name="text">
-           <string> instruction</string>
+           <string> 指令生成</string>
           </property>
          </widget>
          <widget class="QLabel" name="label_2">
@@ -206,7 +245,7 @@ color: rgb(255, 255, 255);</string>
            </rect>
           </property>
           <property name="text">
-           <string>parse  tree</string>
+           <string>语法树</string>
           </property>
          </widget>
          <zorder>label_4</zorder>
@@ -222,42 +261,10 @@ color: rgb(255, 255, 255);</string>
     </item>
    </layout>
   </widget>
-  <widget class="QMenuBar" name="menuBar">
-   <property name="geometry">
-    <rect>
-     <x>0</x>
-     <y>0</y>
-     <width>1269</width>
-     <height>17</height>
-    </rect>
-   </property>
-   <widget class="QMenu" name="menufile">
-    <property name="title">
-     <string>file</string>
-    </property>
-    <addaction name="actionnew"/>
-    <addaction name="actionsave"/>
-    <addaction name="actionopen"/>
-    <addaction name="actionexit"/>
-   </widget>
-   <widget class="QMenu" name="menubuild">
-    <property name="title">
-     <string>build</string>
-    </property>
-    <addaction name="actioncompile"/>
-   </widget>
-   <widget class="QMenu" name="menuhelp">
-    <property name="title">
-     <string>help</string>
-    </property>
-    <addaction name="actionabout"/>
-    <addaction name="actiondoc"/>
-   </widget>
-   <addaction name="menufile"/>
-   <addaction name="menubuild"/>
-   <addaction name="menuhelp"/>
-  </widget>
   <widget class="QToolBar" name="mainToolBar">
+   <property name="autoFillBackground">
+    <bool>true</bool>
+   </property>
    <attribute name="toolBarArea">
     <enum>TopToolBarArea</enum>
    </attribute>
@@ -266,24 +273,52 @@ color: rgb(255, 255, 255);</string>
    </attribute>
   </widget>
   <widget class="QStatusBar" name="statusBar"/>
+  <widget class="QMenuBar" name="menuBar">
+   <property name="geometry">
+    <rect>
+     <x>0</x>
+     <y>0</y>
+     <width>1269</width>
+     <height>26</height>
+    </rect>
+   </property>
+   <widget class="QMenu" name="menufile">
+    <property name="title">
+     <string>文件</string>
+    </property>
+    <addaction name="actionnew"/>
+    <addaction name="actionsave"/>
+    <addaction name="actionopen"/>
+    <addaction name="actionexit"/>
+   </widget>
+   <widget class="QMenu" name="menuhelp">
+    <property name="title">
+     <string>帮助</string>
+    </property>
+    <addaction name="actionabout"/>
+    <addaction name="actiondoc"/>
+   </widget>
+   <addaction name="menufile"/>
+   <addaction name="menuhelp"/>
+  </widget>
   <action name="actionnew">
    <property name="text">
-    <string>new</string>
+    <string notr="true">新建</string>
    </property>
   </action>
   <action name="actionsave">
    <property name="text">
-    <string>save</string>
+    <string>保存</string>
    </property>
   </action>
   <action name="actionopen">
    <property name="text">
-    <string>open</string>
+    <string>打开</string>
    </property>
   </action>
   <action name="actionabout">
    <property name="text">
-    <string>about</string>
+    <string notr="true">关于</string>
    </property>
   </action>
   <action name="actiondoc">
@@ -298,7 +333,7 @@ color: rgb(255, 255, 255);</string>
   </action>
   <action name="actionexit">
    <property name="text">
-    <string>exit</string>
+    <string notr="true">退出</string>
    </property>
   </action>
  </widget>

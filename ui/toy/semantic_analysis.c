@@ -9,6 +9,7 @@ static void handle_expr(AstNode *);
 static void analyze(AstNode *);
 
 static bool ERROR;
+extern char compile_output[2048];
 
 bool semantic_analysis(AstNode *root) {
     if (root == NULL) return FALSE;
@@ -82,7 +83,7 @@ static void handle_expr(AstNode *n) {
                 if (!Symtable_exist(s)) {
                     char tmp[100];
                     sprintf(tmp, "Undefined identifier \"%.*s\"", t.length, t.start);
-                    report_error(SEMANTIC_ERROR, t.line_num, t.line_pos, tmp);
+                    report_error(compile_output, SEMANTIC_ERROR, t.line_num, t.line_pos, tmp);
                     ERROR = TRUE;
                 }
         }

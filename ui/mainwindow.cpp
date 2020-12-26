@@ -1,4 +1,4 @@
-#include "mainwindow.h"
+﻿#include "mainwindow.h"
 #include "ui_mainwindow.h"
 #include "qdir.h"
 #include "qdialog.h"
@@ -9,7 +9,13 @@
 
 #include <string>
 #include <cstring>
-//char compileBuffer[65536*16];
+
+extern "C"
+
+{
+#include "toy/compiler.h"
+}
+
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -46,10 +52,12 @@ void MainWindow::on_actionsave_triggered()
 
 void MainWindow::on_actionopen_triggered()
 {
-    QString curPath=QDir::currentPath();//获取系统当前目录
-    //获取应用程序的路径
-    QString dlgTitle="选择一个文件"; //对话框标题
-    QString filter="source(*.toy);;all(*.*)"; //文件过滤器
+    // 获取系统当前目录
+    QString curPath=QDir::currentPath();
+    // 对话框标题
+    QString dlgTitle="选择一个文件";
+    // 文件过滤器
+    QString filter="all(*.*);;source(*.toy)";
     QString aFileName=QFileDialog::getOpenFileName(this,dlgTitle,curPath,filter);
     if (aFileName.isEmpty())
         return;
@@ -77,10 +85,28 @@ void MainWindow::on_actionexit_triggered()
 
 void MainWindow::on_actionabout_triggered()
 {
-    QMessageBox::about(this, tr("About the compiler"),
-                tr("<p> <b>compiler</b></p> " \
-                   "<p>version 0.1</p>" \
+    QMessageBox::about(this, tr("关于"),
+                tr("<p> <b>toy compiler</b></p> " \
+                   "<p>version 1.0</p>" \
+                   "<p>author: 李嘉睿, 陈可欣, 孔露萍</p>" \
                    ""));
+}
+
+void MainWindow::on_compileButton_clicked()
+{
+    // get the source from edit plane
+    QString context = ui->codeEdit->toPlainText();
+    const char *source = qPrintable(context);
+    // scan, parse and semantic analysis
+    memset(compile_output, 0, sizeof(compile_output));
+    compile(source);
+    // output result to bottom plane
+    ui->compileOutput->setText(compile_output);
+}
+
+void MainWindow::on_actioncompile_triggered()
+{
+    on_compileButton_clicked();
 }
 
 void MainWindow::on_actiondocument_triggered()

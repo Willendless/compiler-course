@@ -12,6 +12,8 @@
 
 #define T Token
 
+char compile_output[2048];
+
 void compile(const char *source) {
     int line = 0;
     AstNode *parse_tree;
