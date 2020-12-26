@@ -1,0 +1,4 @@
+// lack semicolon
+{
+    a = 3
+}
