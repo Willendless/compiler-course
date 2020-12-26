@@ -100,7 +100,7 @@ T *AstNode_gen_ast(T *root) {
 }
 
 static T *gen_ast(T *root) {
-    NonterminalType subtype;
+//    NonterminalType subtype;
     // handle terminal
     // 1. ignore epsilon leaf
     // 2. ignore {, }, ( and )

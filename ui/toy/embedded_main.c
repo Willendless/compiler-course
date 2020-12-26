@@ -12,17 +12,17 @@ void handle_cmd(void);
 void handle_file(char *path);
 char *read_file(char *path);
 
-int main(int argc, char* argv[]) {
-    if (argc <= 1) {
-        handle_cmd();
-    } else if (argc == 2) {
-        handle_file(argv[1]);
-    } else {
-        perror("Usage: toy.out [path]");
-        exit(64);
-    }
-    return 0;
-}
+//int main(int argc, char* argv[]) {
+//    if (argc <= 1) {
+//        handle_cmd();
+//    } else if (argc == 2) {
+//        handle_file(argv[1]);
+//    } else {
+//        perror("Usage: toy.out [path]");
+//        exit(64);
+//    }
+//    return 0;
+//}
 
 void handle_cmd(void) {
     printf("Hello world! This is the interpreter implementation of the toy language used for debug.\n");
