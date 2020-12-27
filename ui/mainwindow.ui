@@ -23,9 +23,9 @@
          <string notr="true"/>
         </property>
         <property name="currentIndex">
-         <number>0</number>
+         <number>1</number>
         </property>
-        <widget class="QWidget" name="widget">
+        <widget class="QWidget" name="mainTab">
          <attribute name="title">
           <string>编辑</string>
          </attribute>
@@ -109,7 +109,7 @@ color: rgb(255, 255, 255);</string>
            <string>输出:</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="compileButton_2">
+         <widget class="QPushButton" name="runButton">
           <property name="geometry">
            <rect>
             <x>430</x>
@@ -125,7 +125,7 @@ color: rgb(255, 255, 255);</string>
            <string>运行</string>
           </property>
          </widget>
-         <widget class="QPushButton" name="compileButton_3">
+         <widget class="QPushButton" name="resetButton">
           <property name="geometry">
            <rect>
             <x>870</x>
@@ -145,10 +145,10 @@ color: rgb(255, 255, 255);</string>
          <zorder>verticalLayoutWidget</zorder>
          <zorder>verticalLayoutWidget_2</zorder>
          <zorder>compileButton</zorder>
-         <zorder>compileButton_2</zorder>
-         <zorder>compileButton_3</zorder>
+         <zorder>runButton</zorder>
+         <zorder>resetButton</zorder>
         </widget>
-        <widget class="QWidget" name="tab_2">
+        <widget class="QWidget" name="irTab">
          <attribute name="title">
           <string notr="true">中间结果</string>
          </attribute>
@@ -163,7 +163,7 @@ color: rgb(255, 255, 255);</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QGraphicsView" name="parseTree"/>
+            <widget class="QGraphicsView" name="parseTreeOutput"/>
            </item>
           </layout>
          </widget>
@@ -178,7 +178,7 @@ color: rgb(255, 255, 255);</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_2">
            <item>
-            <widget class="QTextBrowser" name="Tab2Output">
+            <widget class="QTextBrowser" name="astOutput">
              <property name="styleSheet">
               <string notr="true">font: pt &quot;Consolas&quot;;
 color: rgb(255, 255, 255);
@@ -212,7 +212,7 @@ background-color: rgb(128,138,135);</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout_3">
            <item>
-            <widget class="QTextBrowser" name="instruction">
+            <widget class="QTextBrowser" name="irOutput">
              <property name="styleSheet">
               <string notr="true">font: pt &quot;Consolas&quot;;
 color: rgb(255, 255, 255);

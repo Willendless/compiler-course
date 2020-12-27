@@ -1,8 +1,8 @@
-#ifndef _VM_H_
+﻿#ifndef _VM_H_
 #define _VM_H_
 
 #include "lib/darray.h"
-
-void vm_run(DArray *);
+extern char vmrun_output[2048];
+void vm_run(void);
 
 #endif

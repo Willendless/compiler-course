@@ -1,4 +1,4 @@
-#include "ast.h"
+﻿#include "ast.h"
 #include "stdlib.h"
 #include "token.h"
 #include "utils/debug.h"
@@ -88,6 +88,25 @@ void AstNode_print(AstNode *root, int level) {
     // call each child
     for (i = 0; i <= root->ptrs->end; ++i) {
         AstNode_print(DArray_get(root->ptrs, i), level + 1);
+    }
+}
+
+void AstNode_file_print(FILE *f, AstNode *root, int level) {
+    int i;
+    if (root == NULL) return;
+    // print whitespace
+    for (i = 0; i < level - 1; ++i) {
+        fprintf(f, "  ");
+    }
+    // printf terminal or non-terminal
+    if (root->type == AST_Term) {
+        fprintf(f, "%.*s\n", root->attr.token.length, root->attr.token.start);
+    } else {
+        fprintf(f, "%s\n", root->attr.name);
+    }
+    // call each child
+    for (i = 0; i <= root->ptrs->end; ++i) {
+        AstNode_file_print(f, DArray_get(root->ptrs, i), level + 1);
     }
 }
 

@@ -1,4 +1,4 @@
-#ifndef _AST_H_
+﻿#ifndef _AST_H_
 #define _AST_H_
 
 #include "token.h"
@@ -47,5 +47,6 @@ AstNode *AstNode_init(NodeType type, NonterminalType subtype, Token token, char 
 AstNode *AstNode_get_child(AstNode* n, int k);
 void AstNode_print(AstNode *root, int level);
 AstNode *AstNode_gen_ast(AstNode *root);
+void AstNode_file_print(FILE *f, AstNode *root, int level);
 
 #endif

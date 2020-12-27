@@ -14,6 +14,7 @@ extern "C"
 
 {
 #include "toy/compiler.h"
+#include "toy/vm.h"
 }
 
 
@@ -104,6 +105,19 @@ void MainWindow::on_compileButton_clicked()
     ui->compileOutput->setText(compile_output);
 }
 
+void MainWindow::on_runButton_clicked()
+{
+    memset(vmrun_output, 0, sizeof(vmrun_output));
+    vm_run();
+    ui->compileOutput->setText(vmrun_output);
+}
+
+void MainWindow::on_resetButton_clicked()
+{
+    ui->codeEdit->clear();
+}
+
+
 void MainWindow::on_actioncompile_triggered()
 {
     on_compileButton_clicked();
@@ -114,3 +128,29 @@ void MainWindow::on_actiondocument_triggered()
     //open docx
 }
 
+
+void MainWindow::on_tabWidget_currentChanged(int index)
+{
+    if (index == 1) {
+        // tab changed to ir representation
+        printf("Toggled to ir tab!\n");
+        fflush(stdout);
+        QFile astFile("./.ast.ir");
+        if (!astFile.exists())
+            return;
+        if (!astFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+        ui->astOutput->setText(astFile.readAll());
+        QFile irFile("./.ir.ir");
+        if (!irFile.exists())
+            return;
+        if (!irFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+        ui->irOutput->setText(irFile.readAll());
+        astFile.close();
+        irFile.close();
+    } else {
+        printf("Toggled to main tab!\n");
+        fflush(stdout);
+    }
+}

@@ -1,4 +1,4 @@
-#ifndef _CODE_GEN_H_
+﻿#ifndef _CODE_GEN_H_
 #define _CODE_GEN_H_
 
 #include "ast.h"
@@ -40,6 +40,6 @@ struct _InterCode {
 
 typedef struct _InterCode InterCode;
 
-DArray *code_generation(AstNode *);
+DArray *code_generation(AstNode *, FILE *);
 
 #endif

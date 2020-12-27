@@ -1,4 +1,4 @@
-#include <stdio.h>
+﻿#include <stdio.h>
 #include "parser.h"
 #include "scanner.h"
 #include "ast.h"
@@ -95,6 +95,7 @@ static inline void handle_panic(PanicType type);
 const Token empty = {};
 const Token token_epsilon = {"epsilon", 8};
 extern char compile_output[2048];
+extern bool COMPILE_ERROR;
 
 bool PANIC;
 T word;
@@ -272,6 +273,7 @@ static inline void handle_panic(PanicType type) {
     cur = word;
     stack_top = (int)focus;
     PANIC = TRUE;
+    COMPILE_ERROR = TRUE;
 
     if (type == TERM_PANIC) {
         // for terminal stack_top

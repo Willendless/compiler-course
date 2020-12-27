@@ -1,4 +1,4 @@
-#include "code_gen.h"
+﻿#include "code_gen.h"
 #include "utils/bool.h"
 #include "utils/debug.h"
 #include <stdarg.h>
@@ -50,18 +50,18 @@ static InterCode *make_ir(InterCodeOp op, Operand *arg1, Operand *arg2, Operand 
 static InterCode *combine_code(InterCode *c1, InterCode *c2);
 static InterCode *combine_codes(int, ...);
 // print ir func
-static void print_ir(InterCode *);
-static void print_ir_kind(InterCode *);
-static void print_ir_goto(InterCode *);
-static void print_ir_label(InterCode *);
-static void print_ir_assign(InterCode *);
-static void print_ir_binop(InterCode *);
-static void print_ir_cond(InterCode *);
+static void print_ir(FILE *f, InterCode *);
+static void print_ir_kind(FILE *f, InterCode *);
+static void print_ir_goto(FILE *f, InterCode *);
+static void print_ir_label(FILE *f ,InterCode *);
+static void print_ir_assign(FILE *f, InterCode *);
+static void print_ir_binop(FILE *f, InterCode *);
+static void print_ir_cond(FILE *f, InterCode *);
 static inline void get_name_from_operand(char *name, Operand *operand);
 
 DArray *code;
 
-DArray *code_generation(AstNode *root) {
+DArray *code_generation(AstNode *root, FILE *f) {
     InterCode *ir;
     check(root != NULL, "Fail to generate code for null ast tree.");
     code = DArray_init(sizeof(InterCode), 10);
@@ -69,7 +69,7 @@ DArray *code_generation(AstNode *root) {
     label_index = 1;
     var_index = 1;
     ir = translate_stmt(root);
-    print_ir(ir);
+    print_ir(f, ir);
     return code;
 error:
     return NULL;
@@ -341,57 +341,57 @@ static InterCode *combine_codes(int cnt, ...) {
     return head;
 }
 
-static void print_ir(InterCode *c) {
+static void print_ir(FILE *f, InterCode *c) {
     InterCode *p = c;
 
     do {
-        print_ir_kind(p);
+        print_ir_kind(f, p);
         // push each ir into code
         DArray_push(code, p);
         p = p->next;
     } while (p != c);
 }
 
-static void print_ir_kind(InterCode *ir) {
+static void print_ir_kind(FILE *f, InterCode *ir) {
     switch (ir->op) {
-    case OP_GOTO: print_ir_goto(ir); break;
-    case OP_LABEL: print_ir_label(ir); break;
-    case OP_ASSIGN: print_ir_assign(ir); break;
+    case OP_GOTO: print_ir_goto(f, ir); break;
+    case OP_LABEL: print_ir_label(f, ir); break;
+    case OP_ASSIGN: print_ir_assign(f, ir); break;
     default: 
-        if (ir->op <= OP_DIV) print_ir_binop(ir);
-        else print_ir_cond(ir);
+        if (ir->op <= OP_DIV) print_ir_binop(f, ir);
+        else print_ir_cond(f, ir);
         break;
     }
 }
 
-static void print_ir_goto(InterCode *ir) {
-    printf("goto LABEL%d\n", ir->result->attr.label_index);
+static void print_ir_goto(FILE *f, InterCode *ir) {
+    fprintf(f, "goto LABEL%d\n", ir->result->attr.label_index);
 }
 
-static void print_ir_label(InterCode *ir) {
-    printf("LABEL%d:\n", ir->result->attr.label_index);
+static void print_ir_label(FILE *f, InterCode *ir) {
+    fprintf(f, "LABEL%d:\n", ir->result->attr.label_index);
 }
 
-static void print_ir_assign(InterCode *ir) {
+static void print_ir_assign(FILE *f, InterCode *ir) {
     char head[50], arg1[50];
     get_name_from_operand(head, ir->result);
     get_name_from_operand(arg1, ir->arg1);
-    printf("%s = %s\n", head, arg1);
+    fprintf(f, "%s = %s\n", head, arg1);
 }
 
-static void print_ir_binop(InterCode *ir) {
+static void print_ir_binop(FILE *f, InterCode *ir) {
     char head[50], arg1[50], arg2[50];
     get_name_from_operand(head, ir->result);
     get_name_from_operand(arg1, ir->arg1);
     get_name_from_operand(arg2, ir->arg2);
-    printf("%s = %s %s %s\n", head, arg1, IR_OP_STR[ir->op], arg2);
+    fprintf(f, "%s = %s %s %s\n", head, arg1, IR_OP_STR[ir->op], arg2);
 }
 
-static void print_ir_cond(InterCode *ir) {
+static void print_ir_cond(FILE *f, InterCode *ir) {
     char arg1[50], arg2[50];
     get_name_from_operand(arg1, ir->arg1);
     get_name_from_operand(arg2, ir->arg2);
-    printf("if %s %s %s goto LABEL%d\n", arg1, IR_OP_STR[ir->op], arg2, ir->result->attr.label_index);
+    fprintf(f, "if %s %s %s goto LABEL%d\n", arg1, IR_OP_STR[ir->op], arg2, ir->result->attr.label_index);
 }
 
 static inline void get_name_from_operand(char *name, Operand *operand) {

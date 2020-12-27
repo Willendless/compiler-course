@@ -1,4 +1,4 @@
-#include "vm.h"
+﻿#include "vm.h"
 #include "code_gen.h"
 #include "lib/table.h"
 #include "lib/darray.h"
@@ -16,8 +16,10 @@ typedef struct {
 } Vm;
 
 Vm vm;
+char vmrun_output[2048];
+extern DArray *code;
 
-static void vm_init(DArray *code) {
+static void vm_init() {
     vm.pc = 0;
     vm.code = code;
     vm.label = DArray_init(sizeof(int), 50);
@@ -52,7 +54,7 @@ static void vm_print() {
     for (i = 1; i <= vm.var_name->end; ++i) {
         Token k = *(Token *)DArray_get(vm.var_name, i);
         sprintf(s, "%.*s", k.length, k.start);
-        printf("%s: %d\n", s, DArray_get(vm.var, Symtable_lookup(s)->n));
+        sprintf(vmrun_output, "%s%s: %d\n", vmrun_output, s, DArray_get(vm.var, Symtable_lookup(s)->n));
     }
 }
 
@@ -107,13 +109,12 @@ error:
     return;
 }
 
-void vm_run(DArray *code) {
-    int i;
+void vm_run() {
 
     if (code == NULL) {
         return;
     }
-    vm_init(code);
+    vm_init();
     vm_preprocess();
 
     // instruction dispatch
