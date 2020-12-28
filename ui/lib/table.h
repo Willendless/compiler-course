@@ -1,4 +1,4 @@
-#ifndef _TABLE_H_
+﻿#ifndef _TABLE_H_
 #define _TABLE_H_
 
 #include "../utils/bool.h"
@@ -22,7 +22,7 @@ T *Table_init(int hint, bool cmp(const void *x, const void *y), unsigned hash(co
 void Table_clear(T *table);
 void Table_destroy(T *table);
 void Table_clear_destroy(T *table);
-void Table_map(T *table, void apply(const void *key, void **value, void *c1), void *c1);
+void Table_map(T *table, void apply(void *key, void **value, void *c1), void *c1);
 int Table_length(T *table);
 
 void *Table_put(T *table, const void *key, void *value);

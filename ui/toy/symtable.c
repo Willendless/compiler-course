@@ -1,4 +1,4 @@
-#include <stdlib.h>
+﻿#include <stdlib.h>
 #include "symtable.h"
 #include "lib/set.h"
 #include "lib/table.h"
@@ -15,15 +15,16 @@ void Symtable_init(int hint) {
     symtable = Table_init(hint, cmp_str, hash_str);
 }
 
-void apply_free(const void *mem, void *c1) {
-    if (mem) free(mem);
+void apply_free(void *key, void **value, void *c1) {
+    if (key) free(key);
+    if (value) free(*value);
 }
 
 void Symtable_destroy() {
-    assert(symtable != NULL && "Try to destroy null symbol table");
-
+    // assert(symtable != NULL && "Try to destroy null symbol table");
+    if (symtable == NULL) return;
     // clear and destroy symtable
-    Table_map(symtable, apply_free, NULL);
+    Table_map(symtable, &apply_free, NULL);
     Table_clear_destroy(symtable);
     symtable = NULL;
 }

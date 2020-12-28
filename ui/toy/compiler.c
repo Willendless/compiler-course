@@ -32,6 +32,7 @@ static void init_compiler() {
     ir_file = fopen(irf_name, "w+");
     assert(ir_file!=NULL && "Failed to open ir file.");
     COMPILE_ERROR = FALSE;
+    Symtable_destroy();
 }
 
 static void close_compiler() {

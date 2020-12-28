@@ -1,4 +1,4 @@
-#include <limits.h>
+﻿#include <limits.h>
 #include <stdlib.h>
 #include <assert.h>
 #include <stdio.h>
@@ -58,7 +58,7 @@ void Table_clear(T *table) {
 }
 
 void Table_map(T *table,
-    void apply(const void *key, void **value, void *c1),
+    void apply(void *key, void **value, void *c1),
     void *c1) {
     int i;
     unsigned stamp;
@@ -69,7 +69,7 @@ void Table_map(T *table,
     stamp = table->timestamp;
     for (i = 0; i < table->bucket_size; ++i) {
         for (p = *(table->buckets + i); p; p = p->next) {
-            apply(&(p->key), p->value, c1);
+            apply((p->key), &(p->value), c1);
             assert(table->timestamp == stamp);
         }
     }

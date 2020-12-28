@@ -62,6 +62,7 @@ static void vm_clear() {
     DArray_destroy(vm.label);
     DArray_destroy(vm.var);
     DArray_destroy(vm.temp_var);
+    DArray_destroy(vm.var_name);
 }
 
 static void * get_operand_value(Operand *operand) {
@@ -114,6 +115,8 @@ void vm_run() {
     if (code == NULL) {
         return;
     }
+    log_info("VM begin to run");
+    fflush(stdout);
     vm_init();
     vm_preprocess();
 

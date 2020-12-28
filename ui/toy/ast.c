@@ -58,7 +58,7 @@ void AstNode_record(T *node, int x) {
 }
 
 // clear both each node and ptrs in them
-void AstNode_clear(T *root) {
+void AstNode_tree_clear(T *root) {
 
 }
 

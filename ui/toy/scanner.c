@@ -169,10 +169,10 @@ static inline char next_next() {
     return *(scanner.cur + 2);
 }
 
-static inline char next_next_next() {
-    if (next_next() == '\0') return '\0';
-    return *(scanner.cur + 3);
-}
+//static inline char next_next_next() {
+//    if (next_next() == '\0') return '\0';
+//    return *(scanner.cur + 3);
+//}
 
 static inline bool match(char m) {
     if (is_at_end()) return FALSE;

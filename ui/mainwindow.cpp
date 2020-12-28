@@ -17,6 +17,7 @@ extern "C"
 #include "toy/vm.h"
 }
 
+char buffer[65536*16];
 
 MainWindow::MainWindow(QWidget *parent) :
     QMainWindow(parent),
@@ -97,10 +98,10 @@ void MainWindow::on_compileButton_clicked()
 {
     // get the source from edit plane
     QString context = ui->codeEdit->toPlainText();
-    const char *source = qPrintable(context);
+    sprintf(buffer, "%s", qPrintable(context));
     // scan, parse and semantic analysis
     memset(compile_output, 0, sizeof(compile_output));
-    compile(source);
+    compile(buffer);
     // output result to bottom plane
     ui->compileOutput->setText(compile_output);
 }
@@ -115,6 +116,7 @@ void MainWindow::on_runButton_clicked()
 void MainWindow::on_resetButton_clicked()
 {
     ui->codeEdit->clear();
+    ui->compileOutput->clear();
 }
 
 
