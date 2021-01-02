@@ -163,7 +163,13 @@ color: rgb(255, 255, 255);</string>
           </property>
           <layout class="QVBoxLayout" name="verticalLayout">
            <item>
-            <widget class="QGraphicsView" name="parseTreeOutput"/>
+            <widget class="QTextBrowser" name="parseTreeOutput">
+             <property name="styleSheet">
+              <string notr="true">font: pt &quot;Consolas&quot;;
+color: rgb(255, 255, 255);
+background-color: rgb(128,138,135);</string>
+             </property>
+            </widget>
            </item>
           </layout>
          </widget>

@@ -293,7 +293,7 @@ static inline void handle_panic(PanicType type) {
         // then pop stack
         log_warn("handle_panic(NONTERM_PANIC): %s, %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[word.type]);
         int flag = 0;
-        sprintf(tmp, "Failed matching %s, with %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[(int)focus]);
+        sprintf(tmp, "Failed matching %s, with %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[word.type]);
         report_error(compile_output, SYNTAX_ERROR, cur.line_num, cur.line_pos, tmp);
 
         while (word.type != T_EOF) {
@@ -305,7 +305,7 @@ static inline void handle_panic(PanicType type) {
                     break;
                 }
             }
-            if (flag || word.type == T_RIGHT_BRACE || word.type == T_SEMICOLON) {
+            if (flag || word.type == T_RIGHT_BRACE || word.type == T_SEMICOLON || word.type == T_RIGHT_PAREN) {
                 // current token may be valid to keep parsing
                 break;
             } else {

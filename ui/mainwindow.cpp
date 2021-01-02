@@ -137,6 +137,12 @@ void MainWindow::on_tabWidget_currentChanged(int index)
         // tab changed to ir representation
         printf("Toggled to ir tab!\n");
         fflush(stdout);
+        QFile parseFile("./.parsef.ir");
+        if (!parseFile.exists())
+            return;
+        if (!parseFile.open(QIODevice::ReadOnly | QIODevice::Text))
+            return;
+        ui->parseTreeOutput->setText(parseFile.readAll());
         QFile astFile("./.ast.ir");
         if (!astFile.exists())
             return;
