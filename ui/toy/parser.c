@@ -195,7 +195,8 @@ AstNode *parse(const char *source) {
             // the top of the analysis stack is a non-terminal grammar
             //
             int next_production = action(focus, word);
-            // log_info("next_production: %d", next_production);
+            printf("next_production: %s, current lookahead: %s\n", NONTERMINAL_NAME[next_production], token_type_string[word.type]);
+            fflush(stdout);
             if (next_production > 0) {
                 // init current level of ast subtree
                 // first element set to the index of current processed node
@@ -232,6 +233,12 @@ AstNode *parse(const char *source) {
             }
         }
         focus = Stack_top(stack);
+        if ((int)focus >= non_index) {
+            printf("current stack top: %s\n", NONTERMINAL_NAME[(int)focus - non_index]);
+        } else {
+            printf("current stack top: %s\n", token_type_string[(int)focus]);
+        }
+        fflush(stdout);
     }
 
 error:
@@ -265,6 +272,10 @@ static inline void error(Token t) {
     fprintf(stderr, "error in (line: %d, pos: %d)\n", t.line_num, t.line_pos);
 }
 
+static bool is_end_word(T t) {
+    return t.type == T_SEMICOLON || t.type == T_RIGHT_BRACE || t.type == T_RIGHT_PAREN;
+}
+
 static inline void handle_panic(PanicType type) {
     Token cur;
     char tmp[100];
@@ -284,15 +295,34 @@ static inline void handle_panic(PanicType type) {
             word = scan_token();
             return;
         }
-        sprintf(tmp, "Missing token %s", token_type_string[stack_top]);
+        sprintf(tmp, "Missing token %s, %s instead", token_type_string[stack_top], token_type_string[word.type]);
         report_error(compile_output, SYNTAX_ERROR, word.line_num, word.line_pos, tmp);
         Stack_pop(stack);
     } else {
         // for nonterminal stack_top, report unmatched and keep scanning token
         // until reach one in synchronized set of stack_top
         // then pop stack
-        log_warn("handle_panic(NONTERM_PANIC): %s, %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[word.type]);
+        if (word.type == T_EOF) {
+            Stack_pop(stack);
+            return;
+        }
+
+        static T pre_word;
+        static int pre_focus;
+        if (pre_word.start == word.start && pre_focus == stack_top) {
+            if (is_end_word(pre_word)) {
+                Stack_pop(stack);
+            } else {
+                word = scan_token();
+            }
+            return;
+        } else {
+            pre_word = word;
+            pre_focus = stack_top;
+        }
+
         int flag = 0;
+        bool first = TRUE;
         sprintf(tmp, "Failed matching %s, with %s", NONTERMINAL_NAME[stack_top - non_index], token_type_string[word.type]);
         report_error(compile_output, SYNTAX_ERROR, cur.line_num, cur.line_pos, tmp);
 
@@ -303,15 +333,27 @@ static inline void handle_panic(PanicType type) {
                     // log_info("hit index: %d, num: %d", index, i);
                     flag = 1;
                     break;
+                } else if (is_end_word(word) && epsilon == SYNCHRONIZED_SET[index][i]) {
+                    printf("hit: %s\n", NONTERMINAL_NAME[index]);
+                    fflush(stdout);
+                    Stack_pop(stack);
+                    return;
                 }
             }
-            if (flag || word.type == T_RIGHT_BRACE || word.type == T_SEMICOLON || word.type == T_RIGHT_PAREN) {
+            printf("%s\n", NONTERMINAL_NAME[index]);
+            fflush(stdout);
+            first = FALSE;
+            if (flag) {
                 // current token may be valid to keep parsing
                 break;
-            } else {
+            } else if (is_end_word(word)) {
+                Stack_pop(stack);
+                break;
+            }
+            else {
                 word = scan_token();
             }
         }
-        Stack_pop(stack);
+
     }
 }
