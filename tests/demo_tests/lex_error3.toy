@@ -1,0 +1,19 @@
+{
+  sum = 0;
+  i=2;
+  j=2;
+ 
+  while ( i <= 100) {
+		flag = 1;
+		while  ( j <= i - 1) {
+			while (i % j == 0) {
+				flag = 0;
+			}
+			 j=j+1;
+		}
+		while (flag == 1) {
+			sum = sum + i;
+		}
+		i=i+1;
+	}
+}
