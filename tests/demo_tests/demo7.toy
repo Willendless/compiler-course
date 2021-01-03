@@ -1,0 +1,11 @@
+{
+  min = 50;
+  max = 99;
+  x = 100;
+  while(x < min){
+    min = x;
+  }
+  while(x > max){
+    max = x;
+  }
+}

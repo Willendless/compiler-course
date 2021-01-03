@@ -8,7 +8,7 @@
 |parser|2.5天|4天|
 |代码生成|3天|3天|
 |虚拟机实现|3天|1天|
-|GUI界面|7天||
+|GUI界面|7天|7天|
 
 ## scanner
 
@@ -40,14 +40,17 @@
 ## visualization
 
 + [ ] 多叉树生成算法
-+ [ ] UI界面
++ [x] UI界面
 
 ## 其它部分
 
 - [x] c单元测试
-- [ ] qt可视化显示，[UI参考1](https://mashplant.online/minidecaf-frontend/), [UI参考2](https://github.com/yunwei37/MIPS-sc-zju)
+- [x] qt可视化显示，[UI参考1](https://mashplant.online/minidecaf-frontend/), [UI参考2](https://github.com/yunwei37/MIPS-sc-zju)
 - [ ] IR代码优化
 
 ## reference
 
 - *Engineering a compiler*
+- *编译原理实验手册1，2，3，4  南京大学计算机科学与技术系 许畅等*
+- *Compilers: Principles, Techniques, and Tools*
+- *qt UI参考：https://github.com/yunwei37/MIPS-sc-zju*
