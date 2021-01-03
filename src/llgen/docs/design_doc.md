@@ -1,10 +1,11 @@
 # llgen设计文档
 
-llgen用于生成LL(1) parser使用的parse table。该表最终以二维常数字符串数组表示，表每行表示：*non-terminal在terminal作为lookahead符号的情况下，对应的操作*。操作分为三类：
+llgen用于生成供LL(1) parser使用的parse table以及错误恢复时使用的同步集合。parse表最终以二维常量整型数组表示，表每行表示：*non-terminal符号在terminal符号作为lookahead符号的情况下，对应的操作*。操作分为两类：
 
-1. 推导出的production的索引
-2. error。恢复方式：省略该lookahead character
-3. error。恢复方式：省略该non-terminal
+1. 推导出的production的索引。
+2. error，用0表示。
+
+同步集合最终以二维常量整型数组表示，表每行表示当前non-terminal符号在lookahead符号下无法继续推导进入panic模式时可供选择的下一个terminal符号集合。
 
 ## 输入输出定义
 

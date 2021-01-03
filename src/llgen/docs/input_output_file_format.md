@@ -39,12 +39,12 @@ expr
 term
 factor
 [production]
-goal -> expr
-expr -> term expr'
-expr' -> + term expr' | - term expr' | epsilon
-term -> term * factor | term / factor | factor
-term' -> * factor term' | / factor term' | epsilon
-factor -> ( expr ) | num | name
+goal -> expr $
+expr -> term expr' $
+expr' -> + term expr' | - term expr' | epsilon $
+term -> term * factor | term / factor | factor $
+term' -> * factor term' | / factor term' | epsilon $
+factor -> ( expr ) | num | name $
 ```
 
 ## 2. llgen输出文件格式说明
